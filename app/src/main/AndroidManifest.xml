@@ -9,11 +9,11 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name="com.notadeveloper.app.partyyyadmin.MainActivity">
+    <activity android:name=".MainActivity">
 
     </activity>
-    <activity android:name="com.notadeveloper.app.partyyyadmin.AddAParty"/>
-    <activity android:name="com.notadeveloper.app.partyyyadmin.LoginActivity">
+    <activity android:name=".AddAParty"/>
+    <activity android:name=".LoginActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
@@ -22,7 +22,9 @@
     </activity>
     <activity
         android:name=".OrganizerActivity"
+        android:theme="@style/AppTheme.NoActionBar"
     />
+    <activity android:name=".BecomeOrganiser"/>
     <activity android:name=".DetailedTicketActivity"/>
     <activity android:name=".MyTickets"/>
     <activity android:name=".detailedpartyactivity"/>
