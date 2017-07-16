@@ -285,7 +285,7 @@ public class PartyHolder extends RecyclerView.ViewHolder {
     book.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Intent intent = new Intent(mContext, detailedpartyactivity.class);
+        Intent intent = new Intent(mContext, PartyDetailActivity.class);
         intent.putExtra("party_id", String.valueOf(p.getPid()));
         mContext.startActivity(intent);
       }
@@ -293,7 +293,7 @@ public class PartyHolder extends RecyclerView.ViewHolder {
     cv.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Intent intent = new Intent(mContext, detailedpartyactivity.class);
+        Intent intent = new Intent(mContext, PartyDetailActivity.class);
         intent.putExtra("party_id", String.valueOf(p.getPid()));
         mContext.startActivity(intent);
       }
