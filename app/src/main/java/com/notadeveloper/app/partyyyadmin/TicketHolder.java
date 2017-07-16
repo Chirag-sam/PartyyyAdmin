@@ -11,25 +11,25 @@ import android.widget.TextView;
 
 public class TicketHolder extends RecyclerView.ViewHolder {
 
-    final TextView name;
-    final TextView orderprice;
-    final TextView date;
-    final TextView loct;
-    final TextView timet;
-    final TextView stagprice;
-    final TextView coupleprice;
-    final CardView cv1;
+  final TextView name;
+  final TextView orderprice;
+  final TextView date;
+  final TextView loct;
+  final TextView timet;
+  final TextView stagprice;
+  final TextView coupleprice;
+  final CardView cv1;
 
-    public TicketHolder(View itemView) {
-        super(itemView);
+  public TicketHolder(View itemView) {
+    super(itemView);
 
-        name = (TextView)itemView.findViewById(R.id.name);
-        orderprice = (TextView)itemView.findViewById(R.id.orderprice);
-        date = (TextView)itemView.findViewById(R.id.date);
-        loct = (TextView)itemView.findViewById(R.id.loct);
-        timet = (TextView)itemView.findViewById(R.id.timet);
-        stagprice = (TextView)itemView.findViewById(R.id.stagprice);
-        coupleprice = (TextView)itemView.findViewById(R.id.coupleprice);
-        cv1 = (CardView) itemView.findViewById(R.id.cv1);
-    }
+    name = (TextView) itemView.findViewById(R.id.name);
+    orderprice = (TextView) itemView.findViewById(R.id.orderprice);
+    date = (TextView) itemView.findViewById(R.id.date);
+    loct = (TextView) itemView.findViewById(R.id.loct);
+    timet = (TextView) itemView.findViewById(R.id.timet);
+    stagprice = (TextView) itemView.findViewById(R.id.stagprice);
+    coupleprice = (TextView) itemView.findViewById(R.id.coupleprice);
+    cv1 = (CardView) itemView.findViewById(R.id.cv1);
+  }
 }

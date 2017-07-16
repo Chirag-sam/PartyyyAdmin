@@ -8,95 +8,88 @@ import java.util.HashMap;
  */
 
 public class Users {
-    String uid;
-    String name;
+  String uid;
+  String name;
 
-    String number;
-    String email;
-    Boolean isorganizer;
-    String orgname;
-    ArrayList<String> myparties= new ArrayList<>();
-    HashMap<String,Party.BookedTickets> mytickets= new HashMap<>();
+  String number;
+  String email;
+  Boolean isorganizer;
+  String orgname;
+  ArrayList<String> myparties = new ArrayList<>();
+  HashMap<String, Party.BookedTickets> mytickets = new HashMap<>();
 
-    public String getUid() {
-        return uid;
-    }
+  public Users() {
+  }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
+  public Users(String uid, String name, String number, String email) {
+    this.uid = uid;
+    this.name = name;
+    this.number = number;
+    this.email = email;
+  }
 
-    public HashMap<String, Party.BookedTickets> getMytickets() {
-        return mytickets;
-    }
+  public String getUid() {
+    return uid;
+  }
 
-    public void setMytickets(HashMap<String, Party.BookedTickets> mytickets) {
-        this.mytickets = mytickets;
-    }
+  public void setUid(String uid) {
+    this.uid = uid;
+  }
 
-    public Boolean getIsorganizer() {
-        return isorganizer;
-    }
+  public HashMap<String, Party.BookedTickets> getMytickets() {
+    return mytickets;
+  }
 
-    public void setIsorganizer(Boolean isorganizer) {
-        this.isorganizer = isorganizer;
-    }
+  public void setMytickets(HashMap<String, Party.BookedTickets> mytickets) {
+    this.mytickets = mytickets;
+  }
 
-    public ArrayList<String> getMyparties() {
-        return myparties;
-    }
+  public Boolean getIsorganizer() {
+    return isorganizer;
+  }
 
-    public void setMyparties(ArrayList<String> myparties) {
-        this.myparties = myparties;
-    }
+  public void setIsorganizer(Boolean isorganizer) {
+    this.isorganizer = isorganizer;
+  }
 
+  public ArrayList<String> getMyparties() {
+    return myparties;
+  }
 
-    public String getOrgname() {
-        return orgname;
-    }
+  public void setMyparties(ArrayList<String> myparties) {
+    this.myparties = myparties;
+  }
 
-    public void setOrgname(String orgname) {
-        this.orgname = orgname;
-    }
+  public String getOrgname() {
+    return orgname;
+  }
 
-    public Users() {
-    }
+  public void setOrgname(String orgname) {
+    this.orgname = orgname;
+  }
 
-    public Users(String uid, String name, String number, String email) {
-        this.uid = uid;
-        this.name = name;
-        this.number = number;
-        this.email = email;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getNumber() {
+    return number;
+  }
 
-    public String getNumber() {
-        return number;
-    }
+  public void setNumber(String phone) {
+    this.number = phone;
+  }
 
-    public void setNumber(String phone) {
-        this.number = phone;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-
-
-
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-
+  public void setEmail(String email) {
+    this.email = email;
+  }
 }
 
