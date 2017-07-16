@@ -1,4 +1,4 @@
-package com.example.chirag.partyyyadmin;
+package com.notadeveloper.app.partyyyadmin;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

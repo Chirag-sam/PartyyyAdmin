@@ -1,4 +1,4 @@
-package com.example.chirag.partyyyadmin;
+package com.notadeveloper.app.partyyyadmin;
 
 import android.Manifest;
 import android.app.Activity;
@@ -6,7 +6,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
@@ -54,7 +52,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package com.example.chirag.partyyyadmin;
+package com.notadeveloper.app.partyyyadmin;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
