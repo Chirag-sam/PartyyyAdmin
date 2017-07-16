@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.notadeveloper.app.partyyy.OrganizerActivity">
+    tools:context="com.notadeveloper.app.partyyyadmin.OrganizerActivity">
 
   <android.support.design.widget.AppBarLayout
       android:layout_width="match_parent"
@@ -22,14 +22,15 @@
   </android.support.design.widget.AppBarLayout>
 
   <include layout="@layout/content_organizer"/>
-
-  <android.support.design.widget.FloatingActionButton
-      android:id="@+id/fab"
+  <io.github.yavski.fabspeeddial.FabSpeedDial
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
-      android:layout_margin="@dimen/fab_margin"
-      android:tint="@color/colorPrimary"
-      app:srcCompat="@android:drawable/ic_input_add"/>
+      app:fabGravity="bottom_end"
+      android:id="@+id/fab1"
+      app:fabMenu="@menu/fab_menu"
+      app:miniFabBackgroundTint="@android:color/white"
+      app:miniFabDrawableTint="?attr/colorPrimaryDark"
+      app:miniFabTitleTextColor="?attr/colorPrimaryDark"/>
 
 </android.support.design.widget.CoordinatorLayout>

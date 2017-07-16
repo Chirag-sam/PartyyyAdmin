@@ -8,10 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +20,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import java.util.ArrayList;
 
 import static android.text.Html.fromHtml;
@@ -32,38 +33,35 @@ public class OrganizerActivity extends AppCompatActivity {
   String uid;
   LinearLayoutManager mLayoutManager;
   PartyAdapter mPartyAdapter;
-  private Button publicparty;
-  private Button privateparty;
+  @BindView(R.id.toolbar) Toolbar toolbar;
+  @BindView(R.id.fab1) FabSpeedDial fab;
   private Users u = new Users();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_organizer1);
+    setContentView(R.layout.activity_organizer);
     ButterKnife.bind(this);
     loadadapter();
-
-    publicparty = (Button) findViewById(R.id.publicparty);
-    privateparty = (Button) findViewById(R.id.privateparty);
-
-    publicparty.setOnClickListener(new View.OnClickListener() {
+    fab.setMenuListener(new SimpleMenuListenerAdapter() {
       @Override
-      public void onClick(View view) {
-        Intent i = new Intent(OrganizerActivity.this, AddAParty.class);
-        startActivity(i);
+      public boolean onMenuItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+          case R.id.privateparty:
+            Intent i = new Intent(OrganizerActivity.this, AddAParty.class);
+            startActivity(i);
+            break;
+          case R.id.publicparty:
+            Intent x = new Intent(OrganizerActivity.this, AddAParty.class);
+            startActivity(x);
+            break;
+        }
+
+        return false;
       }
     });
-    privateparty.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Intent i = new Intent(OrganizerActivity.this, AddAParty.class);
-        startActivity(i);
-      }
-    });
 
-    Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-
-    myToolbar.setTitle(fromHtml("<font color='#D4AF37'>    Partyyy</font>"));
+    toolbar.setTitle(fromHtml("<font color='#D4AF37'>    Partyyy</font>"));
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       Window window = getWindow();

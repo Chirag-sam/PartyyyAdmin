@@ -401,8 +401,6 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
           mDatabase.setValue(p);
           Toast.makeText(AddAParty.this, "Redirect to payment gateway",
               Toast.LENGTH_LONG).show();
-          Intent myIntent = new Intent(AddAParty.this, MainActivity.class);
-          startActivity(myIntent);
           finish();
         }
 

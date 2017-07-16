@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+>
+  <item
+      android:id="@+id/publicparty"
+      android:icon="@drawable/ic_public_black_24dp"
+      android:title="Add a Party"/>
+  <item
+      android:id="@+id/privateparty"
+      android:icon="@drawable/ic_lock_black_24dp"
+      android:title="Throw a Private Party"/>
+
+</menu>
