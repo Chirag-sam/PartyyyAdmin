@@ -386,18 +386,18 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
             e1.printStackTrace();
           }
           DatabaseReference mDatabase =
-              ref.child("parties").child(String.valueOf(estimatedServerTimeMs));
+              ref.child("parties").child(String.valueOf(unixtime));
           Log.e("usr", "u.ge" + u.getEmail() + u.getOrgname());
           myparties = u.getMyparties();
           if (myparties == null) {
             myparties = new ArrayList<>();
           }
-          String f = String.valueOf(estimatedServerTimeMs);
-          myparties.add(f);
+
+          myparties.add(String.valueOf(unixtime));
 
           ref.child("users").child(uid).child("myparties").setValue(myparties);
           Party p = new Party(a, photoUrl, b, c, d, e, f, g, h, i, j, null, l, Integer.parseInt(k),
-              userid, nam, estimatedServerTimeMs, m, n, unixtime);
+              userid, nam, unixtime, m, n, unixtime);
           mDatabase.setValue(p);
           Toast.makeText(AddAParty.this, "Redirect to payment gateway",
               Toast.LENGTH_LONG).show();

@@ -99,9 +99,31 @@ public class LoginActivity extends AppCompatActivity {
                       if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Intent myIntent = new Intent(LoginActivity.this, OrganizerActivity.class);
-                        startActivity(myIntent);
-                        finish();
+                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                        mDatabase.child("users")
+                            .child(user.getUid())
+                            .addListenerForSingleValueEvent(
+                                new ValueEventListener() {
+                                  @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Users u = dataSnapshot.getValue(Users.class);
+                                    if (u == null) {
+                                      Intent myIntent =
+                                          new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                      startActivity(myIntent);
+                                      finish();
+                                    } else {
+                                      Intent myIntent =
+                                          new Intent(LoginActivity.this, OrganizerActivity.class);
+                                      startActivity(myIntent);
+                                      finish();
+                                    }
+                                  }
+
+                                  @Override public void onCancelled(DatabaseError databaseError) {
+
+                                  }
+                                });
+
 
 
                       } else {
