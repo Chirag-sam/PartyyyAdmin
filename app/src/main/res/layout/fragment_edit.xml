@@ -1,0 +1,74 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl1"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price per pot:"
+            android:textSize="23dp"
+            android:id="@+id/potstext"/>
+        <TextView
+            android:id="@+id/nopot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/potstext"
+            android:layout_alignTop="@+id/potstext"
+            android:layout_marginLeft="5dp"
+
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@+id/potstext"
+            android:gravity="bottom"
+
+            android:text="₹360"
+            android:textSize="23dp"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/nopot"
+            android:layout_alignBottom="@+id/potstext"
+            android:layout_alignTop="@+id/potstext"
+            app:srcCompat="@drawable/ic_mode_edit_black_24dp"
+            android:id="@+id/edit"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flavours:"
+        android:textSize="23dp"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/flavourstext"
+        android:layout_below="@id/rl1"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/flavourstext">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="end"
+        android:filterTouchesWhenObscured="true"
+        android:text="add a flavor"
+        android:theme="@style/AccentButton"/>
+
+
+</RelativeLayout>
