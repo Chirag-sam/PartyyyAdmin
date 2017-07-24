@@ -98,31 +98,43 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                       if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                        mDatabase.child("users")
-                            .child(user.getUid())
-                            .addListenerForSingleValueEvent(
-                                new ValueEventListener() {
-                                  @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Users u = dataSnapshot.getValue(Users.class);
-                                    if (u == null) {
-                                      Intent myIntent =
-                                          new Intent(LoginActivity.this, BecomeOrganiser.class);
-                                      startActivity(myIntent);
-                                      finish();
-                                    } else {
-                                      Intent myIntent =
-                                          new Intent(LoginActivity.this, OrganizerActivity.class);
-                                      startActivity(myIntent);
-                                      finish();
-                                    }
-                                  }
 
-                                  @Override public void onCancelled(DatabaseError databaseError) {
+                        if(email.equals("sheesha@admin.com"))
+                        {
+                            Intent myIntent =
+                                    new Intent(LoginActivity.this, SheeshaAdminMain.class);
+                            startActivity(myIntent);
+                            finish();
+                        }
+                        else
+                        {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                            mDatabase.child("users")
+                                    .child(user.getUid())
+                                    .addListenerForSingleValueEvent(
+                                            new ValueEventListener() {
+                                                @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    Users u = dataSnapshot.getValue(Users.class);
+                                                    if (u == null) {
+                                                        Intent myIntent =
+                                                                new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                                        startActivity(myIntent);
+                                                        finish();
+                                                    } else {
+                                                        Intent myIntent =
+                                                                new Intent(LoginActivity.this, OrganizerActivity.class);
+                                                        startActivity(myIntent);
+                                                        finish();
+                                                    }
+                                                }
 
-                                  }
-                                });
+                                                @Override public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                        }
+
 
 
 
