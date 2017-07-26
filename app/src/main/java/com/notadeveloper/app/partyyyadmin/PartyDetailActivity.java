@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 public class PartyDetailActivity extends AppCompatActivity {
 
@@ -37,6 +40,18 @@ public class PartyDetailActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_party_detail);
+    PermissionListener dialogPermissionListener =
+        DialogOnDeniedPermissionListener.Builder
+            .withContext(this)
+            .withTitle("Camera permission")
+            .withMessage("Camera permission is for scanning the Ticket")
+            .withButtonText(android.R.string.ok)
+            .withIcon(R.mipmap.ic_launcher)
+            .build();
+    Dexter.withActivity(this)
+        .withPermission(android.Manifest.permission.CAMERA)
+        .withListener(dialogPermissionListener).check();
+
     party_id = getIntent().getStringExtra("party_id");
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
