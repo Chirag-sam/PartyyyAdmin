@@ -1,75 +1,82 @@
 package com.notadeveloper.app.partyyyadmin;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.Button;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
+import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.notadeveloper.app.partyyyadmin.PagerAdapter.*;
 
-import java.util.ArrayList;
 
-public class SheeshaAdminMain extends AppCompatActivity {
+public class SheeshaAdminMain extends AppCompatActivity
+        implements EditFragment.OnFragmentInteractionListener,
+        OrderFragment.OnFragmentInteractionListener {
 
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html) {
+        Spanned result;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            result = Html.fromHtml(html);
+        }
+        return result;
     }
-
-    ArrayList<shesha> list = new ArrayList<>();
-    DatabaseReference ref;
-    Button add;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheesha_admin_main);
 
-        add = (Button)findViewById(R.id.add);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Odrers"));
+        tabLayout.addTab(tabLayout.newTab().setText("Edit Sheesha"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.rv);
-        rv.setHasFixedSize(false);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.my_toolbar);
+        TextView mTitle = (TextView) toolbarTop.findViewById(R.id.toolbar_title);
 
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.keepSynced(true);
-        ref = mDatabase.child("Sheesha");
 
-        add.setOnClickListener(new View.OnClickListener() {
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final com.notadeveloper.app.partyyyadmin.PagerAdapter adapter= new com.notadeveloper.app.partyyyadmin.PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View view) {
-            }
-        });
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot datasnapshot) {
-
-                for (DataSnapshot postSnapshot : datasnapshot.getChildren()) {
-                    shesha s = postSnapshot.getValue(shesha.class);
-                    if (!list.contains(s) && list != null) {
-                        list.add(s);
-                    }
-                }
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
             }
         });
 
 
-        SheeshaAdapter s = new SheeshaAdapter(list, SheeshaAdminMain.this);
-        rv.setAdapter(s);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
