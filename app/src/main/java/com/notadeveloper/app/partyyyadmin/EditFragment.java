@@ -12,13 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 
 
@@ -35,11 +33,12 @@ public class EditFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+  ArrayList<shesha> list = new ArrayList<>();
+  DatabaseReference ref;
+  Button add;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public EditFragment() {
@@ -81,17 +80,13 @@ public class EditFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_edit, container, false);
     }
 
-    ArrayList<shesha> list = new ArrayList<>();
-    DatabaseReference ref;
-    Button add;
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         add = (Button)view.findViewById(R.id.add);
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
+      final RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
         rv.setHasFixedSize(false);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -114,6 +109,9 @@ public class EditFragment extends Fragment {
                     if (!list.contains(s) && list != null) {
                         list.add(s);
                     }
+                  SheeshaAdapter ss = new SheeshaAdapter(list, getActivity());
+                  rv.setAdapter(ss);
+
                 }
             }
 
@@ -124,8 +122,6 @@ public class EditFragment extends Fragment {
         });
 
 
-        SheeshaAdapter s = new SheeshaAdapter(list, getActivity());
-        rv.setAdapter(s);
 
     }
 
