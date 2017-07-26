@@ -1,5 +1,6 @@
 package com.notadeveloper.app.partyyyadmin;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,11 +34,15 @@ public class LoginActivity extends AppCompatActivity {
   private HashMap<String, String> admins;
   private DatabaseReference ref;
   private FirebaseAuth mAuth;
+  private ProgressDialog mprogressDialog;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
+    mprogressDialog = new ProgressDialog(this);
+    mprogressDialog.setMessage("Authenticating...");
+
     ref = FirebaseDatabase.getInstance().getReference();
     proceed = (Button) findViewById(R.id.proceed);
     email = (AutoCompleteTextView) findViewById(R.id.email);
@@ -86,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   void validateadmin(final String email, final String password) {
+    mprogressDialog.show();
     ref.child("admins")
         .child(email.replace('.', '-'))
         .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -101,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         if(email.equals("sheesha@admin.com"))
                         {
+                          mprogressDialog.dismiss();
                             Intent myIntent =
                                     new Intent(LoginActivity.this, SheeshaAdminMain.class);
                             startActivity(myIntent);
@@ -117,11 +124,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 @Override public void onDataChange(DataSnapshot dataSnapshot) {
                                                     Users u = dataSnapshot.getValue(Users.class);
                                                     if (u == null) {
+                                                      mprogressDialog.dismiss();
                                                         Intent myIntent =
                                                                 new Intent(LoginActivity.this, BecomeOrganiser.class);
                                                         startActivity(myIntent);
                                                         finish();
                                                     } else {
+                                                      mprogressDialog.dismiss();
                                                         Intent myIntent =
                                                                 new Intent(LoginActivity.this, OrganizerActivity.class);
                                                         startActivity(myIntent);
@@ -130,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
 
                                                 @Override public void onCancelled(DatabaseError databaseError) {
-
+                                                  mprogressDialog.dismiss();
                                                 }
                                             });
                         }
@@ -148,12 +157,13 @@ public class LoginActivity extends AppCompatActivity {
                                   // Sign in success, update UI with the signed-in user's information
 
                                   FirebaseUser user = mAuth.getCurrentUser();
+                                  mprogressDialog.dismiss();
                                   Intent myIntent = new Intent(LoginActivity.this, BecomeOrganiser.class);
                                   startActivity(myIntent);
                                   finish();
                                 } else {
                                   // If sign in fails, display a message to the user.
-
+                                  mprogressDialog.dismiss();
                                   Toast.makeText(LoginActivity.this, "Authentication failed.",
                                       Toast.LENGTH_SHORT).show();
                                 }
@@ -170,13 +180,14 @@ public class LoginActivity extends AppCompatActivity {
                   });
 
             } else {
-
+              mprogressDialog.dismiss();
               Toast.makeText(LoginActivity.this, "Wrong Credentials Try Again", Toast.LENGTH_SHORT)
                   .show();
             }
           }
 
           @Override public void onCancelled(DatabaseError databaseError) {
+            mprogressDialog.dismiss();
             Toast.makeText(LoginActivity.this, "Database Try Again", Toast.LENGTH_SHORT)
                 .show();
           }
