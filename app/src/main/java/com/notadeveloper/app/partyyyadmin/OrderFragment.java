@@ -3,10 +3,26 @@ package com.notadeveloper.app.partyyyadmin;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -23,9 +39,12 @@ public class OrderFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @BindView(R.id.recycl)RecyclerView mRecyclerView;
+    List<Users.sheeshaorders> lc=new ArrayList<>();
+    OrderAdapter o;
+    LinearLayoutManager mLayoutManager;
+    String x="";
+    boolean b=false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -65,6 +84,62 @@ public class OrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_order, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(getActivity());
+        Bundle b2=getIntent().getExtras();
+        if (b2!=null)
+            x=b2.getString("ordertype");
+
+        if (x!=null){
+            b = x.equals("completedorders");
+
+        }
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setStackFromEnd(true);
+        mLayoutManager.setReverseLayout(true);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        setupadapter();
+
+
+
+
+    }
+
+    void setupadapter()
+    {           final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+        mDatabase.child(x).orderByValue().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot datasnapshot) {
+                lc=new ArrayList<Users.sheeshaorders>();
+                for (DataSnapshot postSnapshot : datasnapshot.getChildren()) {
+                    Users.sheeshaorders u = postSnapshot.getValue(Users.sheeshaorders.class);
+                    if (u!=null){
+                        if (!lc.contains(u))
+                            lc.add(u);}
+
+
+                }
+                o=new OrderAdapter(lc,getActivity(),b);
+
+                mRecyclerView.setAdapter(o);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
