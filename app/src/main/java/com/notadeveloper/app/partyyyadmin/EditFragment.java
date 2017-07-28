@@ -1,9 +1,12 @@
 package com.notadeveloper.app.partyyyadmin;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +14,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,10 +43,12 @@ public class EditFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
   ArrayList<shesha> list = new ArrayList<>();
   DatabaseReference ref;
-  Button add;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView nopot;
+    private ImageView edit;
+    private Button add;
     private OnFragmentInteractionListener mListener;
 
     public EditFragment() {
@@ -83,10 +93,9 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        add = (Button)view.findViewById(R.id.add);
 
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-      final RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
+
+        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
         rv.setHasFixedSize(false);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -94,11 +103,6 @@ public class EditFragment extends Fragment {
         mDatabase.keepSynced(true);
         ref = mDatabase.child("Sheesha");
 
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -109,8 +113,8 @@ public class EditFragment extends Fragment {
                     if (!list.contains(s) && list != null) {
                         list.add(s);
                     }
-                  SheeshaAdapter ss = new SheeshaAdapter(list, getActivity());
-                  rv.setAdapter(ss);
+                    SheeshaAdapter ss = new SheeshaAdapter(list, getActivity());
+                    rv.setAdapter(ss);
 
                 }
             }
@@ -120,6 +124,106 @@ public class EditFragment extends Fragment {
 
             }
         });
+
+        nopot = (TextView)view.findViewById(R.id.nopot);
+        edit = (ImageView)view.findViewById(R.id.edit);
+        add = (Button)view.findViewById(R.id.add123);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref1 = ref.child("potprice");
+        ref1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                nopot.setText("₹"+snapshot.getValue());
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    dialog = new Dialog(getActivity(), R.style.dialogthemez);
+                } else {
+                    dialog = new Dialog(getActivity());
+                }
+                dialog.setContentView(R.layout.addflavourdialog);
+                final AutoCompleteTextView flavour = (AutoCompleteTextView)dialog.findViewById(R.id.flavour);
+                final TextView pottext = (TextView)dialog.findViewById(R.id.pottext);
+                Button confirm = (Button)dialog.findViewById(R.id.confirm);
+
+                confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String s = flavour.getText().toString();
+                        if(s.equals(null))
+                        {
+                            Toast.makeText(getActivity(), "Field cannot be empty!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                            DatabaseReference ref1 = ref.child("Sheesha");
+                            ref1.child(s).child("flavour").setValue(s);
+                            Toast.makeText(getActivity(),"Flavour successfully added!",Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    dialog = new Dialog(getActivity(), R.style.dialogthemez);
+                } else {
+                    dialog = new Dialog(getActivity());
+                }
+                dialog.setContentView(R.layout.editdialog);
+                final AutoCompleteTextView price = (AutoCompleteTextView)dialog.findViewById(R.id.price);
+                TextInputLayout price1 = (TextInputLayout) dialog.findViewById(R.id.price1);
+                Button confirm = (Button)dialog.findViewById(R.id.confirm);
+                confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String s = price.getText().toString();
+                        if(s.equals(null))
+                        {
+                            Toast.makeText(getActivity(), "Field cannot be empty!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                            DatabaseReference ref1 = ref.child("potprice");
+                            ref1.setValue(s);
+                            Toast.makeText(getActivity(),"Price successfully updated!",Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            nopot.setText("₹"+s);
+                        }
+                    }
+                });
+                dialog.show();
+
+            }
+        });
+
+
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+
 
 
 

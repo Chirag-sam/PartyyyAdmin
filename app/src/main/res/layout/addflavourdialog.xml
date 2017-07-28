@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter flavour to be added:"
+        android:textColor="#000"
+        android:textSize="20dp"
+        android:id="@+id/pottext"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/flavour1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pottext"
+        android:layout_toRightOf="@+id/rupees">
+        <AutoCompleteTextView
+            android:id="@+id/flavour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="Enter here"
+            android:maxLines="1"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:filterTouchesWhenObscured="true"
+        android:text="Confirm"
+        android:layout_alignParentRight="true"
+        android:theme="@style/AccentButton"
+        android:layout_below="@+id/flavour1"/>
+
+</RelativeLayout>

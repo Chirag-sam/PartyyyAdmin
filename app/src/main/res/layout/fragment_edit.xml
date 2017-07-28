@@ -52,7 +52,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/flavourstext">
+        android:layout_below="@+id/flavourstext"
+        android:layout_above="@+id/add123"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
@@ -60,7 +63,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/add"
+        android:id="@+id/add123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

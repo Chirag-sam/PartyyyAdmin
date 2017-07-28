@@ -39,6 +39,9 @@ public class OrderFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private String mParam1;
+    private String mParam2;
+
     @BindView(R.id.recycl)RecyclerView mRecyclerView;
     List<Users.sheeshaorders> lc=new ArrayList<>();
     OrderAdapter o;
@@ -51,6 +54,7 @@ public class OrderFragment extends Fragment {
     public OrderFragment() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -91,20 +95,20 @@ public class OrderFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.bind(getActivity());
-        Bundle b2=getIntent().getExtras();
-        if (b2!=null)
-            x=b2.getString("ordertype");
-
-        if (x!=null){
-            b = x.equals("completedorders");
-
-        }
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mLayoutManager.setStackFromEnd(true);
-        mLayoutManager.setReverseLayout(true);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        setupadapter();
+//        Bundle b2=getIntent().getExtras();
+//        if (b2!=null)
+//            x=b2.getString("ordertype");
+//
+//        if (x!=null){
+//            b = x.equals("completedorders");
+//
+//        }
+//        mLayoutManager = new LinearLayoutManager(getActivity());
+//        mLayoutManager.setStackFromEnd(true);
+//        mLayoutManager.setReverseLayout(true);
+//        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//        setupadapter();
 
 
 

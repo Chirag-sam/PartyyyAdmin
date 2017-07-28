@@ -43,7 +43,7 @@ public class SheeshaAdminMain extends AppCompatActivity
         setContentView(R.layout.activity_sheesha_admin_main);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Odrers"));
+        tabLayout.addTab(tabLayout.newTab().setText("Orders"));
         tabLayout.addTab(tabLayout.newTab().setText("Edit Sheesha"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
