@@ -11,9 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,10 +20,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -137,7 +140,7 @@ public class PartyInfoFragment extends Fragment {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         p = dataSnapshot.getValue(Party.class);
-
+        if (p.getPicture() != null)
         Glide.with(getContext()).load(p.getPicture()).into(iv);
 
         final String d = p.getDates();
@@ -178,7 +181,7 @@ public class PartyInfoFragment extends Fragment {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date datee = null;
         try {
-          datee = (Date) formatter.parse(d);
+          datee = formatter.parse(d);
         } catch (ParseException e) {
           e.printStackTrace();
         }

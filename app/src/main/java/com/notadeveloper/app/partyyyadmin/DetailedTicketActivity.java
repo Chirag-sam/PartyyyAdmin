@@ -6,8 +6,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,10 +15,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailedTicketActivity extends AppCompatActivity {
 
@@ -66,8 +69,9 @@ public class DetailedTicketActivity extends AppCompatActivity {
     setContentView(R.layout.activity_ticket_detailed);
     ButterKnife.bind(this);
     String s = getIntent().getStringExtra("Ticket_id");
+    final String uid = getIntent().getStringExtra("User_id");
     FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-    final String uid = mUser.getUid();
+
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     mDatabase.child("users")
         .child(uid)
@@ -121,7 +125,7 @@ public class DetailedTicketActivity extends AppCompatActivity {
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             Date datee = null;
             try {
-              datee = (Date) formatter.parse(b.getDate());
+              datee = formatter.parse(b.getDate());
             } catch (ParseException e) {
               e.printStackTrace();
             }

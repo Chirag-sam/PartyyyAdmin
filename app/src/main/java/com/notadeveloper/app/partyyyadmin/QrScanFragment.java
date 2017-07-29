@@ -10,6 +10,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -67,7 +68,29 @@ public class QrScanFragment extends Fragment {
 
   @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
+    qrEader = new QREader.Builder(getContext(), cameraView, new QRDataListener() {
+      @Override
+      public void onDetected(final String data) {
+        Log.d("QREader", "Value : " + data);
+        getActivity().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            // Your dialog code.
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                    .setTitle("code retrieved")
+                    .setMessage(data);
+            builder.show();
+            //To Stop Showing endless Dialogs
+            scanbutton.setText("Start QREader");
+            qrEader.stop();
+          }
+        });
+      }
+    }).facing(QREader.BACK_CAM)
+            .enableAutofocus(true)
+            .height(cameraView.getHeight())
+            .width(cameraView.getWidth())
+            .build();
     //This Does Not Work!
     //BarcodeCapture barcodeCapture = (BarcodeCapture) getFragmentManager().findFragmentById(barcode);
     //barcodeCapture.setRetrieval(this);
@@ -79,29 +102,7 @@ public class QrScanFragment extends Fragment {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_qr_scan, container, false);
     unbinder = ButterKnife.bind(this, view);
-    qrEader = new QREader.Builder(getContext(), cameraView, new QRDataListener() {
-      @Override
-      public void onDetected(final String data) {
-        Log.d("QREader", "Value : " + data);
-        getActivity().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            // Your dialog code.
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle("code retrieved")
-                .setMessage(data);
-            builder.show();
-            //To Stop Showing endless Dialogs
-            scanbutton.setText("Start QREader");
-            qrEader.stop();
-          }
-        });
-      }
-    }).facing(QREader.BACK_CAM)
-        .enableAutofocus(true)
-        .height(cameraView.getHeight())
-        .width(cameraView.getWidth())
-        .build();
+
     return view;
   }
 

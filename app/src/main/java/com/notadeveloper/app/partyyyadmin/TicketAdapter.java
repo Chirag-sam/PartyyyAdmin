@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import java.util.List;
 
 /**
@@ -35,18 +36,17 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketHolder> {
   public void onBindViewHolder(TicketHolder holder, int position) {
     final Party.BookedTickets c = wList.get(holder.getAdapterPosition());
 
-    holder.name.setText(c.getPname());
-    holder.date.setText(c.getDate());
-    holder.orderprice.setText("Amount paid: ₹" + c.getTprice());
+    holder.name.setText(c.getTid());
+    holder.nameText.setText(c.getUname() + (c.isValidated() ? "(Validated)" : "(Not Validated)"));
+    holder.orderprice.setText("₹" + c.getTprice());
     holder.stagprice.setText("(Stag): " + c.getStagno());
     holder.coupleprice.setText("(Couple): " + c.getCoupleno());
-    holder.loct.setText(c.getLoct());
-    holder.timet.setText(c.getTime());
     holder.cv1.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         Intent intent = new Intent(mContext, DetailedTicketActivity.class);
         intent.putExtra("Ticket_id", String.valueOf(c.getTid()));
+        intent.putExtra("User_id", String.valueOf(c.getUid()));
         mContext.startActivity(intent);
       }
     });
