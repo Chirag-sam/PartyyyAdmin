@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 
@@ -107,7 +108,9 @@ public class EditFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot datasnapshot) {
-
+                if (list != null)
+                    list.clear();
+                else list = new ArrayList<shesha>();
                 for (DataSnapshot postSnapshot : datasnapshot.getChildren()) {
                     shesha s = postSnapshot.getValue(shesha.class);
                     if (!list.contains(s) && list != null) {
