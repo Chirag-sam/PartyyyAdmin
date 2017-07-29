@@ -1,9 +1,11 @@
 package com.notadeveloper.app.partyyyadmin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -112,5 +114,21 @@ public class OrganizerActivity extends AppCompatActivity {
 
       }
     });
+  }
+  @Override
+  public void onBackPressed() {
+
+    final AlertDialog.Builder builder = new AlertDialog.Builder(OrganizerActivity.this, R.style.pop);
+    builder.setMessage("Are You Sure you want to exit?");
+    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
+      }
+    });
+    builder.setNegativeButton("No", null);
+    builder.show();
+    //  super.onBackPressed();
   }
 }

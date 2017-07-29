@@ -41,8 +41,7 @@ public class OrderFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
-
-    @BindView(R.id.recycl)RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     List<Users.sheeshaorders> lc=new ArrayList<>();
     OrderAdapter o;
     LinearLayoutManager mLayoutManager;
@@ -94,56 +93,49 @@ public class OrderFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ButterKnife.bind(getActivity());
-//        Bundle b2=getIntent().getExtras();
-//        if (b2!=null)
-//            x=b2.getString("ordertype");
-//
-//        if (x!=null){
-//            b = x.equals("completedorders");
-//
-//        }
-//        mLayoutManager = new LinearLayoutManager(getActivity());
-//        mLayoutManager.setStackFromEnd(true);
-//        mLayoutManager.setReverseLayout(true);
-//        mRecyclerView.setHasFixedSize(true);
-//        mRecyclerView.setLayoutManager(mLayoutManager);
-//        setupadapter();
+        mRecyclerView = (RecyclerView)view.findViewById(R.id.recycl);
+
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setStackFromEnd(true);
+        mLayoutManager.setReverseLayout(true);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        setupadapter();
+
 
 
 
 
     }
 
-    void setupadapter()
-    {           final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    void setupadapter() {
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        mDatabase.child("pendingorders")
+                .orderByValue()
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot datasnapshot) {
+                        for (DataSnapshot postSnapshot : datasnapshot.getChildren()) {
+                            Users.sheeshaorders u = postSnapshot.getValue(Users.sheeshaorders.class);
+                            if (u != null) {
+                                if (!lc.contains(u)) {
+                                    lc.add(u);
+                                }
+                            } else {
+                                lc = new ArrayList<Users.sheeshaorders>();
+                            }
+                            o = new OrderAdapter(lc, getActivity());
 
-        mDatabase.child(x).orderByValue().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot datasnapshot) {
-                lc=new ArrayList<Users.sheeshaorders>();
-                for (DataSnapshot postSnapshot : datasnapshot.getChildren()) {
-                    Users.sheeshaorders u = postSnapshot.getValue(Users.sheeshaorders.class);
-                    if (u!=null){
-                        if (!lc.contains(u))
-                            lc.add(u);}
+                            mRecyclerView.setAdapter(o);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-
-                }
-                o=new OrderAdapter(lc,getActivity(),b);
-
-                mRecyclerView.setAdapter(o);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
+                    }
+                });
     }
 
     // TODO: Rename method, update argument and hook method into UI event

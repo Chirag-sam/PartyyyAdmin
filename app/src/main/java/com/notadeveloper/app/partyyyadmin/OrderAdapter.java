@@ -19,12 +19,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderHolder>{
     private List<Users.sheeshaorders> wList;
     private Context mContext;
     boolean type=false;
-    public OrderAdapter(List<Users.sheeshaorders> wList, Context context,boolean type) {
+    public OrderAdapter(List<Users.sheeshaorders> wList, Context context) {
 
 
         this.wList = wList;
         mContext = context;
-        this.type=type;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderHolder>{
         if (c.getAmount() != null)
             holder.price.setText("₹ "+c.getAmount());
         else holder.price.setText("");
-        holder.noofpot.setText("Prescribed by: " + c.getNoofpots());
+        holder.noofpot.setText("Number of pots : " + c.getNoofpots());
         holder.deliverby.setText("Deliver By : " + c.getDeliverby());
         holder.details.setText("Details : " + c.getName()+",\nFlat no : "+c.getAdd1()+",\nArea     : "+c.getAdd2()+",\nPin     : "+c.getAddpin()+"\nPhone  : "+c.getPhone());
         if (c.getStatus().equals("Delivered"))

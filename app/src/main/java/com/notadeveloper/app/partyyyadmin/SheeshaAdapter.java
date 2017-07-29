@@ -105,7 +105,7 @@ public class SheeshaAdapter extends RecyclerView.Adapter<SheeshaHolder> {
                 final String s1 = s.getFlavour();
                 final AlertDialog.Builder builder =
                         new AlertDialog.Builder(mContext, R.style.pop);
-                builder.setMessage("Are You Sure?");
+                builder.setMessage("Are you sure you want to delete this flavour?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
