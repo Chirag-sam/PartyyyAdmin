@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(myIntent);
                             finish();
                         }
-                        else
+                        else if(email.endsWith("@pat.com"))
                         {
                             FirebaseUser user = mAuth.getCurrentUser();
                             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -142,6 +142,37 @@ public class LoginActivity extends AppCompatActivity {
                                                   mprogressDialog.dismiss();
                                                 }
                                             });
+                        }
+                        else if(email.endsWith("@club.com"))
+                        {
+
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                            mDatabase.child("users")
+                                    .child(user.getUid())
+                                    .addListenerForSingleValueEvent(
+                                            new ValueEventListener() {
+                                                @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    Users u = dataSnapshot.getValue(Users.class);
+                                                    if (u == null) {
+                                                        mprogressDialog.dismiss();
+                                                        Intent myIntent = new Intent(LoginActivity.this, ClubsMain.class);
+                                                        startActivity(myIntent);
+                                                        finish();
+                                                    } else {
+                                                        mprogressDialog.dismiss();
+                                                        Intent myIntent =
+                                                                new Intent(LoginActivity.this, ClubsMain.class);
+                                                        startActivity(myIntent);
+                                                        finish();
+                                                    }
+                                                }
+
+                                                @Override public void onCancelled(DatabaseError databaseError) {
+                                                    mprogressDialog.dismiss();
+                                                }
+                                            });
+
                         }
 
 

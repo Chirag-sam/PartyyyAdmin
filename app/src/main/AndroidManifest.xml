@@ -31,8 +31,10 @@
             android:name=".PartyDetailActivity"
             android:label="@string/title_activity_party_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SheeshaAdminMain"
-            android:theme="@style/AppThemenotool"/>
+        <activity
+            android:name=".SheeshaAdminMain"
+            android:theme="@style/AppThemenotool" />
+        <activity android:name=".ClubsMain"></activity>
     </application>
 
 </manifest>
