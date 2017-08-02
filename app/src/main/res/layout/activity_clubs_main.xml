@@ -15,12 +15,30 @@
         tools:context="com.notadeveloper.app.sgnpharmacy.Register"
         android:orientation="vertical"
         android:padding="20dp">
-        <ImageButton
-            android:id="@+id/picture"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:contentDescription="Change Party Pic"
-            android:scaleType="fitXY"/>
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add pictures of clubs:"
+            android:textSize="20sp"
+            android:layout_marginTop="15dp"
+            />
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/recyclerview">
+
+        </android.support.v7.widget.RecyclerView>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click to add images from galery"
+            android:theme="@style/AccentButton"
+            android:id="@+id/addimages"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click to add picture from camera"
+            android:theme="@style/AccentButton"
+            android:id="@+id/camerabutton"/>
         <android.support.design.widget.TextInputLayout
             android:id="@+id/clubname1"
             android:layout_width="match_parent"
@@ -250,12 +268,25 @@
             android:textSize="20sp"
             android:layout_marginTop="15dp"
             />
-        <ImageButton
-            android:id="@+id/picturemenu"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:contentDescription="Change Party Pic"
-            android:scaleType="fitXY"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/recyclerview1">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click to add images from galery"
+            android:theme="@style/AccentButton"
+            android:id="@+id/addmenuimages"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click to add picture from camera"
+            android:theme="@style/AccentButton"
+            android:id="@+id/menucamerabutton"/>
 
         <Button
             android:id="@+id/confirm"

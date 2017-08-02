@@ -1,27 +1,27 @@
 package com.notadeveloper.app.partyyyadmin;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,9 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.Manifest;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,19 +40,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.mikelau.croperino.Croperino;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
+import com.nileshp.multiphotopicker.photopicker.activity.PickImageActivity;
 
-import java.text.DateFormat;
-import java.text.ParseException;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -67,8 +64,6 @@ public class ClubsMain extends AppCompatActivity {
     static String datetxt;
     final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     Users u = new Users();
-    @BindView(R.id.picture)
-    ImageButton mProfile;
     @BindView(R.id.clubname)
     AutoCompleteTextView mClubname;
     @BindView(R.id.clubname1)
@@ -115,6 +110,8 @@ public class ClubsMain extends AppCompatActivity {
     TextInputLayout pinlt;
 
     long esttime;
+    @BindView(R.id.addimages)
+    Button addimages;
     private long estimatedServerTimeMs;
     private String photoUrl;
     private FirebaseStorage storage;
@@ -127,17 +124,52 @@ public class ClubsMain extends AppCompatActivity {
     private AutoCompleteTextView clubname;
     private CheckBox parking;
     private CheckBox swimming;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView recyclerViewmenu;
+    private RecyclerView.Adapter menuadapter;
+    private Button camerabutton;
+    private Button menucamerabutton;
+    private Button addmenuimages;
+
+    private String mCurrentPhotoPath;
+
+    private Uri mImageUri;
+
+    static final int IMAGE_CAPTURE = 101;
+
+
+    private ArrayList<String> pathList;
+    private ArrayList<String> temp;
+    private static final String TAG = ClubsMain.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clubs_main);
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        checkPermission();
         ButterKnife.bind(this);
         getUser();
 
-        clubname1 = (TextInputLayout)findViewById(R.id.clubname1);
-        clubname = (AutoCompleteTextView)findViewById(R.id.clubname);
-        parking = (CheckBox)findViewById(R.id.parking);
-        swimming = (CheckBox)findViewById(R.id.swimming);
+        pathList = new ArrayList<>();
+        temp = new ArrayList<>();
+
+
+        clubname1 = (TextInputLayout) findViewById(R.id.clubname1);
+        clubname = (AutoCompleteTextView) findViewById(R.id.clubname);
+        parking = (CheckBox) findViewById(R.id.parking);
+        swimming = (CheckBox) findViewById(R.id.swimming);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        camerabutton = (Button)findViewById(R.id.camerabutton);
+
+        recyclerViewmenu = (RecyclerView) findViewById(R.id.recyclerview1);
+        recyclerViewmenu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        menucamerabutton = (Button)findViewById(R.id.menucamerabutton);
+        addmenuimages = (Button)findViewById(R.id.addmenuimages);
+
 
 
         time.setOnClickListener(new View.OnClickListener() {
@@ -184,17 +216,42 @@ public class ClubsMain extends AppCompatActivity {
                 Environment.getExternalStorageDirectory().getPath());
         CroperinoFileUtil.setupDirectory(ClubsMain.this);
 
-        mProfile.setOnClickListener(new View.OnClickListener() {
+//        mProfile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                imagesRef = storageRef.child("images").child("parties");
+//
+//                getEstimatedServerTimeMs();
+//
+//                multiImagePicker();
+//
+//
+//            }
+//        });
+        addimages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                multiImagePicker();
+            }
+        });
+        camerabutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveImage();
+            }
+        });
 
-                imagesRef = storageRef.child("images").child("parties");
-
-                getEstimatedServerTimeMs();
-
-                if (CroperinoFileUtil.verifyStoragePermissions(ClubsMain.this)) {
-                    prepareChooser();
-                }
+        addmenuimages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                multiImagePicker();
+            }
+        });
+        menucamerabutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveImage();
             }
         });
     }
@@ -223,9 +280,9 @@ public class ClubsMain extends AppCompatActivity {
         final ArrayList<String> utils = new ArrayList<>();
 
 
-        if(parking.isChecked())
+        if (parking.isChecked())
             utils.add(parking.getText().toString());
-        if(swimming.isChecked())
+        if (swimming.isChecked())
             utils.add(swimming.getText().toString());
 
         if (isEmpty(a)) {
@@ -346,7 +403,7 @@ public class ClubsMain extends AppCompatActivity {
                             ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
 
 
-                    Club cl = new Club( photoUrl,a, c, d, e, f, g, h, i, j, l,null,utils);
+                    Club cl = new Club(null, a, c, d, e, f, g, h, i, j, l, null, utils);
                     mDatabase.setValue(cl);
                     ref.child("users").child(uid).child("myclub").setValue(cl);
                     Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
@@ -361,104 +418,6 @@ public class ClubsMain extends AppCompatActivity {
         }
     }
 
-
-
-    private void prepareChooser() {
-        Croperino.prepareChooser(ClubsMain.this, "Change Picture",
-                ContextCompat.getColor(ClubsMain.this, android.R.color.background_dark));
-    }
-
-    private void prepareCamera() {
-        Croperino.prepareCamera(ClubsMain.this);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case CroperinoConfig.REQUEST_TAKE_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 1, 1, 0,
-                            0);
-                }
-                break;
-            case CroperinoConfig.REQUEST_PICK_FILE:
-                if (resultCode == Activity.RESULT_OK) {
-                    CroperinoFileUtil.newGalleryFile(data, ClubsMain.this);
-                    Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 1, 1, 0,
-                            0);
-                }
-                break;
-            case CroperinoConfig.REQUEST_CROP_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    Uri i = Uri.fromFile(CroperinoFileUtil.getmFileTemp());
-                    mProfile.setImageURI(i);
-                    UploadTask uploadTask = imagesRef.putFile(i);
-
-                    // Register observers to listen for when the download is done or if it fails
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                            photoUrl = downloadUrl.toString();
-                        }
-                    });
-                    //Do saving / uploading of photo method here.
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == CroperinoFileUtil.REQUEST_CAMERA) {
-            for (int i = 0; i < permissions.length; i++) {
-                String permission = permissions[i];
-                int grantResult = grantResults[i];
-
-                if (permission.equals(android.Manifest.permission.CAMERA)) {
-                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        prepareCamera();
-                    }
-                }
-            }
-        } else if (requestCode == CroperinoFileUtil.REQUEST_EXTERNAL_STORAGE) {
-            boolean wasReadGranted = false;
-            boolean wasWriteGranted = false;
-
-            for (int i = 0; i < permissions.length; i++) {
-                String permission = permissions[i];
-                int grantResult = grantResults[i];
-
-                if (permission.equals(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        wasReadGranted = true;
-                    }
-                }
-                if (permission.equals(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        wasWriteGranted = true;
-                    }
-                }
-            }
-
-            if (wasReadGranted && wasWriteGranted) {
-                prepareChooser();
-            }
-        }
-    }
 
     private boolean isValidEmail(String email) {
 
@@ -508,5 +467,119 @@ public class ClubsMain extends AppCompatActivity {
         });
     }
 
+    private void multiImagePicker() {
+        Intent mIntent = new Intent(this, PickImageActivity.class);
+        mIntent.putExtra(PickImageActivity.KEY_LIMIT_MAX_IMAGE, 60);
+        mIntent.putExtra(PickImageActivity.KEY_LIMIT_MIN_IMAGE, 3);
+        startActivityForResult(mIntent, PickImageActivity.PICKER_REQUEST_CODE);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        temp = pathList;
+        if (resultCode == -1 && requestCode == PickImageActivity.PICKER_REQUEST_CODE) {
+            pathList = intent.getExtras().getStringArrayList(PickImageActivity.KEY_DATA_RESULT);
+            int t = temp.size();
+            for(int i = 0;i<t;i++)
+            {
+                pathList.add(temp.get(i));
+            }
+
+
+            Log.d(TAG, "path list: " + pathList);
+            if (pathList != null && !this.pathList.isEmpty()) {
+                StringBuilder sb = new StringBuilder("");
+                for (int i = 0; i < pathList.size(); i++) {
+                    sb.append("Photo" + (i + 1) + ":" + pathList.get(i));
+                    sb.append("\n");
+                }
+                adapter = new MultipleImagesAdapter(pathList, getApplicationContext());
+                recyclerView.setAdapter(adapter);
+            }
+        }
+        else if(requestCode == IMAGE_CAPTURE && intent!=null){
+            if (resultCode == RESULT_OK){
+//                Toast.makeText(this, "Image saved at "+ mImageUri, Toast.LENGTH_LONG).show();
+//                Picasso.with(getApplicationContext()).load(mCurrentPhotoPath).into(imageView);
+                pathList.add(mCurrentPhotoPath);
+                adapter = new MultipleImagesAdapter(pathList, this);
+
+                recyclerView.setAdapter(adapter);
+
+
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(this, "Failed to save image", Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(this, "Error in saving image", Toast.LENGTH_LONG).show();
+
+            }
+        }
+    }
+    private void saveImage() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            //Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = Uri.fromFile(photoFile);
+                Log.i(TAG, "Image saved at "+ photoURI);
+                mImageUri = photoURI;
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, IMAGE_CAPTURE);
+            }
+        }
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Log.i(TAG, "image path: "+mCurrentPhotoPath);
+        return image;
+    }
+    private boolean hasCamera(){
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            //if permission granted, initialize the views
+
+//            if(!fileExistance("test.pdf")){
+//            }
+//            else {
+//                showFile();
+//            }
+        } else {
+            //show the dialog requesting to grant permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
 }
