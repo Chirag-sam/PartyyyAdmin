@@ -41,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
@@ -436,19 +437,30 @@ public class ClubsMain extends AppCompatActivity {
             uploadTask.addOnFailureListener(new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
+                Snackbar.make(findViewById(android.R.id.content), "Upload Failed Try Again",
+                    Snackbar.LENGTH_LONG);
                 // Handle unsuccessful uploads
+              }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+              @Override public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress =
+                    100.0 * (taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                System.out.println("Upload is " + progress + "% done");
+                int currentprogress = (int) progress;
+                mprogressbar.setIndeterminate(false);
+                mprogressbar.setProgress(currentprogress);
               }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
               @Override
               public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                mprogressbar.setProgress((int) ((index + 1 / mArrayUri.size()) * 100));
                 if (downloadUrl != null) {
                   imagesUri.add(downloadUrl.toString());
                 }
 
-                if (index == mArrayUri.size() - 1) {
+                if (index == mArrayUri.size()) {
+                  Log.e(TAG, "onSuccess: " + imagesUri.toString());
                   Club cl = new Club(imagesUri, a, c, d, e, f, g, h, i, j, l, null, utils);
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
@@ -537,6 +549,8 @@ public class ClubsMain extends AppCompatActivity {
           Uri uri = item.getUri();
           mArrayUri.add(uri);
         }
+        adapter = new MultipleImagesAdapter(mArrayUri, this);
+        recyclerView.setAdapter(adapter);
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
     }
