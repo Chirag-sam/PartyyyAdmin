@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Club
 {
-    String clubpicture;
+    ArrayList<String> clubpicture;
     String clubname;
     String time;
     String time1;
@@ -19,10 +19,13 @@ public class Club
     String address3;
     String pin;
     String description;
-    String menupicture;
+    ArrayList<String> menupicture;
     ArrayList<String> utils;
 
-    public Club(String clubpicture, String clubname, String time, String time1, String email, String number, String address1, String address2, String address3, String pin, String description, String menupicture, ArrayList<String>utils) {
+    public Club(ArrayList<String> clubpicture, String clubname, String time, String time1,
+        String email, String number, String address1, String address2, String address3,
+        String pin, String description, ArrayList<String> menupicture,
+        ArrayList<String> utils) {
         this.clubpicture = clubpicture;
         this.clubname = clubname;
         this.time = time;
@@ -38,12 +41,20 @@ public class Club
         this.utils = utils;
     }
 
-    public String getClubpicture() {
+    public ArrayList<String> getClubpicture() {
         return clubpicture;
     }
 
-    public void setClubpicture(String clubpicture) {
+    public void setClubpicture(ArrayList<String> clubpicture) {
         this.clubpicture = clubpicture;
+    }
+
+    public ArrayList<String> getMenupicture() {
+        return menupicture;
+    }
+
+    public void setMenupicture(ArrayList<String> menupicture) {
+        this.menupicture = menupicture;
     }
 
     public String getClubname() {
@@ -126,13 +137,6 @@ public class Club
         this.description = description;
     }
 
-    public String getMenupicture() {
-        return menupicture;
-    }
-
-    public void setMenupicture(String menupicture) {
-        this.menupicture = menupicture;
-    }
 
     public ArrayList<String> getUtils() {
         return utils;
