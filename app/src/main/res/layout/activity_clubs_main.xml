@@ -287,13 +287,13 @@
             android:text="Click to add picture from camera"
             android:theme="@style/AccentButton"
             android:id="@+id/menucamerabutton"/>
-        <ProgressBar android:layout_width="match_parent"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressbar"
-            android:progress="0"
-        />
 
+
+      <ProgressBar
+          style="?android:attr/progressBarStyleHorizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/progressbar"/>
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"

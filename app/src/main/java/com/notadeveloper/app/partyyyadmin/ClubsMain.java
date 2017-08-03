@@ -49,7 +49,6 @@ import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsList
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -65,7 +64,9 @@ public class ClubsMain extends AppCompatActivity {
 
   static final int IMAGE_CAPTURE = 101;
   private static final int REQUEST_CODE_CHOOSE = 420;
+  private static final int REQUEST_CODE_CHOOSE_MENU = 666;
   private static final String TAG = ClubsMain.class.getSimpleName();
+
   static String datetxt;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
@@ -113,11 +114,12 @@ public class ClubsMain extends AppCompatActivity {
   EditText pincode;
   @BindView(R.id.pinlt)
   TextInputLayout pinlt;
-  int index = 0;
   long esttime;
   @BindView(R.id.addimages)
   Button addimages;
   @BindView(R.id.progressbar) ProgressBar mprogressbar;
+  private int index = 0;
+  private int index2 = 0;
   private long estimatedServerTimeMs;
   private String photoUrl;
   private FirebaseStorage storage;
@@ -142,6 +144,7 @@ public class ClubsMain extends AppCompatActivity {
   private ArrayList<String> pathList;
   private ArrayList<String> temp;
   private ArrayList<Uri> mArrayUri;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -170,20 +173,20 @@ public class ClubsMain extends AppCompatActivity {
     pathList = new ArrayList<>();
     temp = new ArrayList<>();
 
-    clubname1 = (TextInputLayout) findViewById(R.id.clubname1);
-    clubname = (AutoCompleteTextView) findViewById(R.id.clubname);
-    parking = (CheckBox) findViewById(R.id.parking);
-    swimming = (CheckBox) findViewById(R.id.swimming);
-    recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+    clubname1 = findViewById(R.id.clubname1);
+    clubname = findViewById(R.id.clubname);
+    parking = findViewById(R.id.parking);
+    swimming = findViewById(R.id.swimming);
+    recyclerView = findViewById(R.id.recyclerview);
     recyclerView.setLayoutManager(
         new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-    camerabutton = (Button) findViewById(R.id.camerabutton);
+    camerabutton = findViewById(R.id.camerabutton);
 
-    recyclerViewmenu = (RecyclerView) findViewById(R.id.recyclerview1);
+    recyclerViewmenu = findViewById(R.id.recyclerview1);
     recyclerViewmenu.setLayoutManager(
         new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-    menucamerabutton = (Button) findViewById(R.id.menucamerabutton);
-    addmenuimages = (Button) findViewById(R.id.addmenuimages);
+    menucamerabutton = findViewById(R.id.menucamerabutton);
+    addmenuimages = findViewById(R.id.addmenuimages);
 
     time.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -245,7 +248,12 @@ public class ClubsMain extends AppCompatActivity {
     addimages.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        multiImagePicker();
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_CHOOSE);
+
       }
     });
     camerabutton.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +266,18 @@ public class ClubsMain extends AppCompatActivity {
     addmenuimages.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        multiImagePicker();
+        if (mArrayUri != null && mArrayUri.size() != 0) {
+          Intent intent = new Intent();
+          intent.setType("image/*");
+          intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+          intent.setAction(Intent.ACTION_GET_CONTENT);
+          startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+              REQUEST_CODE_CHOOSE_MENU);
+        } else {
+          Toast.makeText(ClubsMain.this, "Add Club Pictures First before uploading Menu",
+              Toast.LENGTH_SHORT).show();
+        }
+
       }
     });
     menucamerabutton.setOnClickListener(new View.OnClickListener() {
@@ -301,6 +320,7 @@ public class ClubsMain extends AppCompatActivity {
                             ".jpg",         /* suffix */
                             storageDir      /* directory */
                             );
+
 
                     // Save a file: path for use with ACTION_VIEW intents
                             mCurrentPhotoPath = image.getAbsolutePath();
@@ -496,9 +516,15 @@ public class ClubsMain extends AppCompatActivity {
                   imagesUri.add(downloadUrl.toString());
                 }
 
-                if (index == mArrayUri.size()) {
-                  Log.e(TAG, "onSuccess: " + imagesUri.toString());
-                  Club cl = new Club(imagesUri, a, c, d, e, f, g, h, i, j, l, null, utils);
+                if (index == mArrayUri.size() && imagesUri.size() == mArrayUri.size()) {
+                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + mArrayUri.toString());
+
+                  ArrayList<String> clublist = new ArrayList<String>();
+                  clublist.addAll(imagesUri.subList(0, index2));
+                  ArrayList<String> menulist = new ArrayList<String>();
+                  menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
+
+                  Club cl = new Club(clublist, a, c, d, e, f, g, h, i, j, l, menulist, utils);
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   mprogressbar.setProgress(100);
@@ -566,13 +592,7 @@ public class ClubsMain extends AppCompatActivity {
     });
   }
 
-  private void multiImagePicker() {
-    Intent intent = new Intent();
-    intent.setType("image/*");
-    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-    intent.setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_CHOOSE);
-  }
+
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -580,7 +600,6 @@ public class ClubsMain extends AppCompatActivity {
     if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
-
         for (int i = 0; i < mClipData.getItemCount(); i++) {
           ClipData.Item item = mClipData.getItemAt(i);
           Uri uri = item.getUri();
@@ -591,21 +610,43 @@ public class ClubsMain extends AppCompatActivity {
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
     }
-    if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
+    if (requestCode == REQUEST_CODE_CHOOSE_MENU && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
-        mArrayUri = new ArrayList<Uri>();
+        index2 = mArrayUri.size();
         for (int i = 0; i < mClipData.getItemCount(); i++) {
           ClipData.Item item = mClipData.getItemAt(i);
           Uri uri = item.getUri();
           mArrayUri.add(uri);
         }
+        menuadapter = new MultipleImagesAdapter(
+            new ArrayList<Uri>(mArrayUri.subList(index2, mArrayUri.size())), this);
+        recyclerViewmenu.setAdapter(menuadapter);
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
     }
-    if(requestCode == IMAGE_CAPTURE && data!=null)
+    //if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
+    //  if (data.getClipData() != null) {
+    //    ClipData mClipData = data.getClipData();
+    //
+    //    mArrayUri = new ArrayList<Uri>();
+    //    for (int i = 0; i < mClipData.getItemCount(); i++) {
+    //      ClipData.Item item = mClipData.getItemAt(i);
+    //      Uri uri = item.getUri();
+    //      mArrayUri.add(uri);
+    //    }
+    //    Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
+    //  }
+    //}
+    if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK)
     {
-        mArrayUri.add(Uri.parse(mCurrentPhotoPath));
+
+      mArrayUri.add(mImageUri);
+      menuadapter =
+          new MultipleImagesAdapter(new ArrayList<Uri>(mArrayUri.subList(index2, mArrayUri.size())),
+              this);
+      recyclerViewmenu.setAdapter(menuadapter);
+      Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUri.toString());
         
     }
   }
