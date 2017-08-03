@@ -49,6 +49,9 @@ import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsList
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -144,6 +147,7 @@ public class ClubsMain extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_clubs_main);
+      mArrayUri = new ArrayList<Uri>();
     MultiplePermissionsListener dialogPermissionListener =
         DialogOnAnyDeniedMultiplePermissionsListener.Builder
             .withContext(this)
@@ -247,7 +251,7 @@ public class ClubsMain extends AppCompatActivity {
     camerabutton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        captureImage();
+        saveImage();
       }
     });
 
@@ -260,16 +264,49 @@ public class ClubsMain extends AppCompatActivity {
     menucamerabutton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-
+        saveImage();
       }
     });
   }
 
-  private void captureImage() {
-    Intent intent = new Intent(
-        MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-    startActivityForResult(intent, IMAGE_CAPTURE);
-  }
+  private void saveImage() {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+                   if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                  //Create the File where the photo should go
+                          File photoFile = null;
+                  try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                                ex.printStackTrace();
+                    }
+                  // Continue only if the File was successfully created
+                         if (photoFile != null) {
+                        Uri photoURI = Uri.fromFile(photoFile);
+                        Log.i(TAG, "Image saved at "+ photoURI);
+                        mImageUri = photoURI;
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, IMAGE_CAPTURE);
+                    }
+              }
+        }
+     private File createImageFile() throws IOException {
+           // Create an image file name
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+           File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File image = File.createTempFile(
+                                    imageFileName,  /* prefix */
+                            ".jpg",         /* suffix */
+                            storageDir      /* directory */
+                            );
+
+                    // Save a file: path for use with ACTION_VIEW intents
+                            mCurrentPhotoPath = image.getAbsolutePath();
+            Log.i(TAG, "image path: "+mCurrentPhotoPath);
+            return image;
+        }
 
   @OnClick(R.id.location)
   public void onClickloc() {
@@ -543,7 +580,7 @@ public class ClubsMain extends AppCompatActivity {
     if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
-        mArrayUri = new ArrayList<Uri>();
+
         for (int i = 0; i < mClipData.getItemCount(); i++) {
           ClipData.Item item = mClipData.getItemAt(i);
           Uri uri = item.getUri();
@@ -565,6 +602,11 @@ public class ClubsMain extends AppCompatActivity {
         }
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
+    }
+    if(requestCode == IMAGE_CAPTURE && data!=null)
+    {
+        mArrayUri.add(Uri.parse(mCurrentPhotoPath));
+        
     }
   }
 }
