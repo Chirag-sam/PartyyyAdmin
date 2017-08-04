@@ -26,7 +26,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class BecomeOrganiser extends AppCompatActivity {
 
-  final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
   @BindView(R.id.register)
   Button register;
   @BindView(R.id.orgname)
@@ -43,7 +43,9 @@ public class BecomeOrganiser extends AppCompatActivity {
   @BindView(R.id.name1) TextInputLayout name1;
   @BindView(R.id.pass) AutoCompleteTextView pass;
   @BindView(R.id.pass1) TextInputLayout pass1;
-  String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+  String uid;
+  String email;
+  FirebaseUser user;
   private DatabaseReference mDatabase;
 
   @Override
@@ -51,7 +53,11 @@ public class BecomeOrganiser extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_become_organiser);
     ButterKnife.bind(this);
-
+    user = FirebaseAuth.getInstance().getCurrentUser();
+    if (user != null) {
+      uid = user.getUid();
+      email = user.getEmail();
+    }
     terms.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -118,8 +124,8 @@ public class BecomeOrganiser extends AppCompatActivity {
         focusView.requestFocus();
       }
     } else {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+      if (user != null) {
       user.updatePassword(passw)
           .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -129,6 +135,7 @@ public class BecomeOrganiser extends AppCompatActivity {
               }
             }
           });
+      }
       mDatabase.child("users").child(uid).child("orgname").setValue(a);
       mDatabase.child("users").child(uid).child("isorganizer").setValue(true);
       mDatabase.child("users").child(uid).child("number").setValue(b);
@@ -140,7 +147,10 @@ public class BecomeOrganiser extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-             s = bundle.getString("name");
+          s = bundle.getString("ID");
+          if (s == null) {
+            s = " ";
+          }
         }
         else s=" ";
 
@@ -152,8 +162,6 @@ public class BecomeOrganiser extends AppCompatActivity {
       else
       {
         Intent i = new Intent(BecomeOrganiser.this, ClubsMain.class);
-        i.putExtra("First time","True");
-          i.putExtra("clubid"," ");
         startActivity(i);
       }
 

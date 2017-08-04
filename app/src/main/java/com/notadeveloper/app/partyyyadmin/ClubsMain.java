@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -47,8 +46,6 @@ import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.mikelau.croperino.CroperinoConfig;
-import com.mikelau.croperino.CroperinoFileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -68,7 +65,6 @@ public class ClubsMain extends AppCompatActivity {
   private static final String TAG = ClubsMain.class.getSimpleName();
   private static final int IMAGE_CAPTURE_2 = 102;
 
-  static String datetxt;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
   @BindView(R.id.clubname)
@@ -122,79 +118,28 @@ public class ClubsMain extends AppCompatActivity {
   private int index = 0;
   private int index2 = 0;
   private long estimatedServerTimeMs;
-  private String photoUrl;
   private FirebaseStorage storage;
-  private StorageReference storageRef;
-  private StorageReference imagesRef;
   private DatabaseReference ref;
-  private FirebaseAuth mAuth;
-  private FirebaseUser mUser;
   private TextInputLayout clubname1;
   private AutoCompleteTextView clubname;
   private CheckBox parking;
   private CheckBox swimming;
   private RecyclerView recyclerView;
-  private RecyclerView.Adapter adapter;
   private RecyclerView recyclerViewmenu;
-  private RecyclerView.Adapter menuadapter;
   private Button camerabutton;
   private Button menucamerabutton;
   private Button addmenuimages;
   private String mCurrentPhotoPath;
   private Uri mImageUri;
-  private ArrayList<String> pathList;
-  private ArrayList<String> temp;
   private ArrayList<Uri> mArrayUri;
   private ArrayList<Uri> mArrayUriMenu;
-    Club c = new Club();
-
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_clubs_main);
-
-
-
-    String s = getIntent().getStringExtra("First time");
-      String s1 = getIntent().getStringExtra("clubid");
-
-    if(s.equals("False"))
-    {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        ref = mDatabase.child("clubs").child(s1);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                c=dataSnapshot.getValue(Club.class);
-                clubname.setText(c.getClubname());
-                time.setText(c.getTime());
-                time1.setText(c.getTime1());
-                mEmail.setText(c.getEmail());
-                mNumber.setText(c.getNumber());
-                address1.setText(c.getAddress1());
-                address2.setText(c.getAddress2());
-                address3.setText(c.getAddress3());
-                pincode.setText(c.getPin());
-                mText.setText(c.getDescription());
-                ArrayList<String> ar = new ArrayList<String>();
-                ar=c.getUtils();
-                if(ar.contains("Parking"))
-                    parking.setChecked(true);
-                if(ar.contains("Swimming"))
-                    swimming.setChecked(true);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-    mArrayUri = new ArrayList<Uri>();
-    mArrayUriMenu = new ArrayList<Uri>();
+    mArrayUri = new ArrayList<>();
+    mArrayUriMenu = new ArrayList<>();
+    ButterKnife.bind(this);
     MultiplePermissionsListener dialogPermissionListener =
         DialogOnAnyDeniedMultiplePermissionsListener.Builder
             .withContext(this)
@@ -208,15 +153,6 @@ public class ClubsMain extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE)
         .withListener(dialogPermissionListener).check();
-    StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-    StrictMode.setVmPolicy(builder.build());
-
-    ButterKnife.bind(this);
-    getUser();
-
-    pathList = new ArrayList<>();
-    temp = new ArrayList<>();
-
     clubname1 = findViewById(R.id.clubname1);
     clubname = findViewById(R.id.clubname);
     parking = findViewById(R.id.parking);
@@ -225,13 +161,12 @@ public class ClubsMain extends AppCompatActivity {
     recyclerView.setLayoutManager(
         new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
     camerabutton = findViewById(R.id.camerabutton);
-
     recyclerViewmenu = findViewById(R.id.recyclerview1);
     recyclerViewmenu.setLayoutManager(
         new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
     menucamerabutton = findViewById(R.id.menucamerabutton);
     addmenuimages = findViewById(R.id.addmenuimages);
-
+    getUser();
     time.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -269,26 +204,7 @@ public class ClubsMain extends AppCompatActivity {
       }
     });
     storage = FirebaseStorage.getInstance();
-    storageRef = storage.getReferenceFromUrl("gs://partyyy-5e773.appspot.com");
     ref = FirebaseDatabase.getInstance().getReference();
-
-    new CroperinoConfig("IMG_" + System.currentTimeMillis() + ".jpg", "/MikeLau/Pictures",
-        Environment.getExternalStorageDirectory().getPath());
-    CroperinoFileUtil.setupDirectory(ClubsMain.this);
-
-    //        mProfile.setOnClickListener(new View.OnClickListener() {
-    //            @Override
-    //            public void onClick(View view) {
-    //
-    //                imagesRef = storageRef.child("images").child("parties");
-    //
-    //                getEstimatedServerTimeMs();
-    //
-    //                multiImagePicker();
-    //
-    //
-    //            }
-    //        });
     addimages.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -297,7 +213,6 @@ public class ClubsMain extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_CHOOSE);
-
       }
     });
     camerabutton.setOnClickListener(new View.OnClickListener() {
@@ -321,7 +236,6 @@ public class ClubsMain extends AppCompatActivity {
           Toast.makeText(ClubsMain.this, "Add Club Pictures First before uploading Menu",
               Toast.LENGTH_SHORT).show();
         }
-
       }
     });
     menucamerabutton.setOnClickListener(new View.OnClickListener() {
@@ -333,44 +247,44 @@ public class ClubsMain extends AppCompatActivity {
   }
 
   private void saveImage(int code) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Ensure that there's a camera activity to handle the intent
-                   if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                  //Create the File where the photo should go
-                          File photoFile = null;
-                  try {
-                        photoFile = createImageFile();
-                    } catch (IOException ex) {
-                        // Error occurred while creating the File
-                                ex.printStackTrace();
-                    }
-                  // Continue only if the File was successfully created
-                         if (photoFile != null) {
-                        Uri photoURI = Uri.fromFile(photoFile);
-                        Log.i(TAG, "Image saved at "+ photoURI);
-                        mImageUri = photoURI;
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                           startActivityForResult(takePictureIntent, code);
-                    }
-              }
-        }
-     private File createImageFile() throws IOException {
-           // Create an image file name
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "JPEG_" + timeStamp + "_";
-           File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            File image = File.createTempFile(
-                                    imageFileName,  /* prefix */
-                            ".jpg",         /* suffix */
-                            storageDir      /* directory */
-                            );
+    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    // Ensure that there's a camera activity to handle the intent
+    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+      //Create the File where the photo should go
+      File photoFile = null;
+      try {
+        photoFile = createImageFile();
+      } catch (IOException ex) {
+        // Error occurred while creating the File
+        ex.printStackTrace();
+      }
+      // Continue only if the File was successfully created
+      if (photoFile != null) {
+        Uri photoURI = Uri.fromFile(photoFile);
+        Log.i(TAG, "Image saved at " + photoURI);
+        mImageUri = photoURI;
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        startActivityForResult(takePictureIntent, code);
+      }
+    }
+  }
 
+  private File createImageFile() throws IOException {
+    // Create an image file name
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(new Date());
+    String imageFileName = "JPEG_" + timeStamp + "_";
+    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    File image = File.createTempFile(
+        imageFileName,  /* prefix */
+        ".jpg",         /* suffix */
+        storageDir      /* directory */
+    );
 
-                    // Save a file: path for use with ACTION_VIEW intents
-                            mCurrentPhotoPath = image.getAbsolutePath();
-            Log.i(TAG, "image path: "+mCurrentPhotoPath);
-            return image;
-        }
+    // Save a file: path for use with ACTION_VIEW intents
+    mCurrentPhotoPath = image.getAbsolutePath();
+    Log.i(TAG, "image path: " + mCurrentPhotoPath);
+    return image;
+  }
 
   @OnClick(R.id.location)
   public void onClickloc() {
@@ -507,8 +421,6 @@ public class ClubsMain extends AppCompatActivity {
       }
     } else {
 
-      final String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-      final String nam = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
       final Calendar cal = Calendar.getInstance();
       mprogressbar.setIndeterminate(true);
       DatabaseReference offsetRef =
@@ -517,11 +429,14 @@ public class ClubsMain extends AppCompatActivity {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
           long offset = snapshot.getValue(Long.class);
-          estimatedServerTimeMs = (System.currentTimeMillis() + offset);
+          if (u != null && u.getMyclub() != null) {
+            estimatedServerTimeMs = Long.parseLong(u.getMyclub().getClubid());
+          } else {
+            estimatedServerTimeMs = (System.currentTimeMillis() + offset);
+          }
           cal.setTimeInMillis(estimatedServerTimeMs);
           SimpleDateFormat formatter =
               new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-          String date = formatter.format(new Date(cal.getTimeInMillis()));
           final DatabaseReference mDatabase =
               ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
           final ArrayList<Uri> tempUri = new ArrayList<Uri>();
@@ -566,12 +481,14 @@ public class ClubsMain extends AppCompatActivity {
                 if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
                   Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
 
-                  ArrayList<String> clublist = new ArrayList<String>();
+                  ArrayList<String> clublist = new ArrayList<>();
                   clublist.addAll(imagesUri.subList(0, index2));
-                  ArrayList<String> menulist = new ArrayList<String>();
+                  ArrayList<String> menulist = new ArrayList<>();
                   menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
 
-                  Club cl = new Club(String.valueOf(estimatedServerTimeMs),clublist, a, c, d, e, f, g, h, i, j, l, menulist, utils);
+                  Club cl =
+                      new Club(String.valueOf(estimatedServerTimeMs), clublist, a, c, d, e, f, g, h,
+                          i, j, l, menulist, utils);
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   mprogressbar.setProgress(100);
@@ -610,7 +527,6 @@ public class ClubsMain extends AppCompatActivity {
       public void onDataChange(DataSnapshot snapshot) {
         long offset = snapshot.getValue(Long.class);
         esttime = System.currentTimeMillis() + offset;
-        imagesRef = storageRef.child("images").child("parties").child(String.valueOf(esttime));
       }
 
       @Override
@@ -630,6 +546,27 @@ public class ClubsMain extends AppCompatActivity {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         u = dataSnapshot.getValue(Users.class);
+        if (u != null && u.getMyclub() != null) {
+          Club c = u.getMyclub();
+          clubname.setText(c.getClubname());
+          time.setText(c.getTime());
+          time1.setText(c.getTime1());
+          mEmail.setText(c.getEmail());
+          mNumber.setText(c.getNumber());
+          address1.setText(c.getAddress1());
+          address2.setText(c.getAddress2());
+          address3.setText(c.getAddress3());
+          pincode.setText(c.getPin());
+          mText.setText(c.getDescription());
+          ArrayList<String> ar = c.getUtils();
+          if (ar.contains("Parking")) {
+            parking.setChecked(true);
+          }
+          if (ar.contains("Swimming")) {
+            swimming.setChecked(true);
+          }
+          mConfirm.setText("Update Details");
+        }
       }
 
       @Override
@@ -639,11 +576,10 @@ public class ClubsMain extends AppCompatActivity {
     });
   }
 
-
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+    RecyclerView.Adapter adapter;
     if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
@@ -657,6 +593,7 @@ public class ClubsMain extends AppCompatActivity {
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
     }
+    RecyclerView.Adapter menuadapter;
     if (requestCode == REQUEST_CODE_CHOOSE_MENU && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
@@ -671,21 +608,7 @@ public class ClubsMain extends AppCompatActivity {
         Log.e(TAG, "onActivityResult: " + mArrayUriMenu.toString());
       }
     }
-    //if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
-    //  if (data.getClipData() != null) {
-    //    ClipData mClipData = data.getClipData();
-    //
-    //    mArrayUri = new ArrayList<Uri>();
-    //    for (int i = 0; i < mClipData.getItemCount(); i++) {
-    //      ClipData.Item item = mClipData.getItemAt(i);
-    //      Uri uri = item.getUri();
-    //      mArrayUri.add(uri);
-    //    }
-    //    Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
-    //  }
-    //}
-    if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK)
-    {
+    if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
       mArrayUri.add(mImageUri);
       adapter =

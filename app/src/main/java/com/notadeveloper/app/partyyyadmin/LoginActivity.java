@@ -20,22 +20,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.util.HashMap;
 
 import static android.text.TextUtils.isEmpty;
 
 public class LoginActivity extends AppCompatActivity {
 
-  private Button proceed;
   private AutoCompleteTextView email;
   private AutoCompleteTextView password;
   private TextInputLayout email1;
   private TextInputLayout password1;
-  private HashMap<String, String> admins;
   private DatabaseReference ref;
   private FirebaseAuth mAuth;
   private ProgressDialog mprogressDialog;
-    Users u = new Users();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +39,12 @@ public class LoginActivity extends AppCompatActivity {
     setContentView(R.layout.activity_login);
     mprogressDialog = new ProgressDialog(this);
     mprogressDialog.setMessage("Authenticating...");
-
     ref = FirebaseDatabase.getInstance().getReference();
-    proceed = (Button) findViewById(R.id.proceed);
-    email = (AutoCompleteTextView) findViewById(R.id.email);
-    password = (AutoCompleteTextView) findViewById(R.id.password);
-    email1 = (TextInputLayout) findViewById(R.id.email1);
-    password1 = (TextInputLayout) findViewById(R.id.password1);
-    admins = new HashMap<>();
+    Button proceed = findViewById(R.id.proceed);
+    email = findViewById(R.id.email);
+    password = findViewById(R.id.password);
+    email1 = findViewById(R.id.email1);
+    password1 = findViewById(R.id.password1);
     mAuth = FirebaseAuth.getInstance();
     proceed.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -105,117 +99,108 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                       if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-
-                        if(email.equals("sheesha@admin.com"))
-                        {
-                          mprogressDialog.dismiss();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                          if (email.equals("sheesha@admin.com")) {
+                            mprogressDialog.dismiss();
                             Intent myIntent =
-                                    new Intent(LoginActivity.this, SheeshaAdminMain.class);
+                                new Intent(LoginActivity.this, SheeshaAdminMain.class);
                             startActivity(myIntent);
                             finish();
+                          } else if (email.endsWith("@pat.com")) {
+                            ref.child("users")
+                                .child(user.getUid())
+                                .addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                      @Override
+                                      public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Users u = dataSnapshot.getValue(Users.class);
+                                        if (u == null) {
+                                          mprogressDialog.dismiss();
+                                          Intent myIntent =
+                                              new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                          myIntent.putExtra("ID", "party");
+                                          startActivity(myIntent);
+                                          finish();
+                                        } else {
+                                          mprogressDialog.dismiss();
+                                          Intent myIntent =
+                                              new Intent(LoginActivity.this,
+                                                  OrganizerActivity.class);
+                                          startActivity(myIntent);
+                                          finish();
+                                        }
+                                      }
+
+                                      @Override
+                                      public void onCancelled(DatabaseError databaseError) {
+                                        mprogressDialog.dismiss();
+                                      }
+                                    });
+                          } else if (email.endsWith("@club.com")) {
+                            ref.child("users")
+                                .child(user.getUid())
+                                .addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                      @Override
+                                      public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Users u = dataSnapshot.getValue(Users.class);
+                                        if (u == null) {
+                                          mprogressDialog.dismiss();
+                                          Intent myIntent =
+                                              new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                          myIntent.putExtra("ID", "club");
+                                          startActivity(myIntent);
+                                          finish();
+                                        } else {
+                                          mprogressDialog.dismiss();
+                                          Intent myIntent =
+                                              new Intent(LoginActivity.this, ClubsMain.class);
+                                          startActivity(myIntent);
+                                          finish();
+                                        }
+                                      }
+
+                                      @Override
+                                      public void onCancelled(DatabaseError databaseError) {
+                                        mprogressDialog.dismiss();
+                                      }
+                                    });
+                          }
+                        } else {
+                          mprogressDialog.dismiss();
+                          Toast.makeText(LoginActivity.this, "Auth Fail", Toast.LENGTH_SHORT)
+                              .show();
                         }
-                        else if(email.endsWith("@pat.com"))
-                        {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                            mDatabase.child("users")
-                                    .child(user.getUid())
-                                    .addListenerForSingleValueEvent(
-                                            new ValueEventListener() {
-                                                @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    Users u = dataSnapshot.getValue(Users.class);
-                                                    if (u == null) {
-                                                      mprogressDialog.dismiss();
-                                                        Intent myIntent =
-                                                                new Intent(LoginActivity.this, BecomeOrganiser.class);
-                                                        myIntent.putExtra("ID", "party");
-                                                        startActivity(myIntent);
-                                                        finish();
-                                                    } else {
-                                                      mprogressDialog.dismiss();
-                                                        Intent myIntent =
-                                                                new Intent(LoginActivity.this, OrganizerActivity.class);
-                                                        startActivity(myIntent);
-                                                        finish();
-                                                    }
-                                                }
-
-                                                @Override public void onCancelled(DatabaseError databaseError) {
-                                                  mprogressDialog.dismiss();
-                                                }
-                                            });
-                        }
-                        else if(email.endsWith("@club.com"))
-                        {
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                            mDatabase.child("users")
-                                    .child(user.getUid())
-                                    .addListenerForSingleValueEvent(
-                                            new ValueEventListener() {
-                                                @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    Users u = dataSnapshot.getValue(Users.class);
-                                                    if (u == null) {
-                                                        mprogressDialog.dismiss();
-                                                        Intent myIntent = new Intent(LoginActivity.this, BecomeOrganiser.class);
-                                                        myIntent.putExtra("ID", "club");
-                                                        startActivity(myIntent);
-                                                        finish();
-                                                    } else {
-                                                        mprogressDialog.dismiss();
-                                                        getUser();
-                                                        Intent myIntent =
-                                                                new Intent(LoginActivity.this, ClubsMain.class);
-                                                        myIntent.putExtra("First time","False");
-                                                        myIntent.putExtra("clubid",u.getUid().toString());
-                                                        startActivity(myIntent);
-                                                        finish();
-                                                    }
-                                                }
-
-                                                @Override public void onCancelled(DatabaseError databaseError) {
-                                                    mprogressDialog.dismiss();
-                                                }
-                                            });
-
-                        }
-
-
-
-
                       } else {
                         // If sign in fails, display a message to the user.
                         mAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                              @Override
-                              public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                  // Sign in success, update UI with the signed-in user's information
+                            .addOnCompleteListener(LoginActivity.this,
+                                new OnCompleteListener<AuthResult>() {
+                                  @Override
+                                  public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                      // Sign in success, update UI with the signed-in user's information
+                                      mprogressDialog.dismiss();
+                                      Intent myIntent =
+                                          new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                      startActivity(myIntent);
+                                      finish();
+                                    } else {
+                                      // If sign in fails, display a message to the user.
+                                      mprogressDialog.dismiss();
+                                      Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                          Toast.LENGTH_SHORT).show();
+                                    }
 
-                                  FirebaseUser user = mAuth.getCurrentUser();
-                                  mprogressDialog.dismiss();
-                                  Intent myIntent = new Intent(LoginActivity.this, BecomeOrganiser.class);
-                                  startActivity(myIntent);
-                                  finish();
-                                } else {
-                                  // If sign in fails, display a message to the user.
-                                  mprogressDialog.dismiss();
-                                  Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                      Toast.LENGTH_SHORT).show();
-                                }
-
-                                // ...
-                              }
-                            });
-
-
+                                    // ...
+                                  }
+                                });
                       }
 
                       // ...
                     }
                   });
-
             } else {
               mprogressDialog.dismiss();
               Toast.makeText(LoginActivity.this, "Wrong Credentials Try Again", Toast.LENGTH_SHORT)
@@ -230,22 +215,4 @@ public class LoginActivity extends AppCompatActivity {
           }
         });
   }
-    void getUser() {
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = mUser.getUid();
-        final DatabaseReference mDatabase =
-                FirebaseDatabase.getInstance().getReference().child("users").child(uid);
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                u = dataSnapshot.getValue(Users.class);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 }
