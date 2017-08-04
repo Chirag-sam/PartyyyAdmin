@@ -6,7 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.notadeveloper.app.partyyyadmin.SheeshaAdminMain.fromHtml;
@@ -35,7 +40,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderHolder>{
         return new OrderHolder(itemView);
     }
 
-    @Override public void onBindViewHolder(OrderHolder holder, int position) {
+    @Override public void onBindViewHolder(final OrderHolder holder, int position) {
         final Users.sheeshaorders c=wList.get(holder.getAdapterPosition());
         holder.orderid.setText(c.getOrderid());
         holder.date.setText(c.getOrderdate());
@@ -57,6 +62,45 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderHolder>{
                 else tp="pendingorders";
             }
         });
+        if(c.getStatus().equals("Delivered"))
+        {
+            holder.switch1.setChecked(true);
+        }
+        else
+            holder.switch1.setChecked(false);
+
+        holder.switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (holder.switch1.isChecked()) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                    DatabaseReference ref1 = ref.child("pendingorders").child(c.getOrderid()).child("status");
+                    ref1.setValue("Delivered");
+                    holder.status.setText(fromHtml("Status: <font color='#228B22'>" + c.getStatus() + "</font>"));
+                    Intent intent = new Intent(mContext, SheeshaAdminMain.class);
+                    mContext.startActivity(intent);
+
+
+                }
+                else
+                    {
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                        DatabaseReference ref1 = ref.child("pendingorders").child(c.getOrderid()).child("status");
+                        ref1.setValue("Pending");
+                    holder.status.setText(fromHtml("Status: <font color='#FFC107'>" + c.getStatus() + "</font>"));
+                        Intent intent = new Intent(mContext, SheeshaAdminMain.class);
+                        mContext.startActivity(intent);
+                }
+            }
+        });
+        String fla="Flavours: ";
+        for(int i = 0;i<c.getFlavours().size();i++)
+        {
+            fla=fla+c.getFlavours().get(i).toString()+", ";
+        }
+        fla = fla.substring(0,fla.length()-2)+".";
+        holder.flavours.setText(fla);
+
 
 
 

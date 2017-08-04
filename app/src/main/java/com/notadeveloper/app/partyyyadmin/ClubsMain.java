@@ -558,6 +558,24 @@ public class ClubsMain extends AppCompatActivity {
           address3.setText(c.getAddress3());
           pincode.setText(c.getPin());
           mText.setText(c.getDescription());
+            ArrayList<Uri> ars = new ArrayList<Uri>();
+            for(int i = 0;i<c.getMenupicture().size();i++)
+            {
+                ars.add(Uri.parse(c.getMenupicture().get(i)));
+            }
+          RecyclerView.Adapter menuadapter =
+                  new MultipleImagesAdapter(ars, getApplicationContext());
+          recyclerViewmenu.setAdapter(menuadapter);
+
+            ArrayList<Uri> ars1 = new ArrayList<Uri>();
+            for(int j = 0;j<c.getClubpicture().size();j++)
+            {
+                ars.add(Uri.parse(c.getClubpicture().get(j)));
+            }
+            RecyclerView.Adapter clubadapter =
+                    new MultipleImagesAdapter(ars, getApplicationContext());
+            recyclerView.setAdapter(clubadapter);
+
           ArrayList<String> ar = c.getUtils();
           if (ar.contains("Parking")) {
             parking.setChecked(true);

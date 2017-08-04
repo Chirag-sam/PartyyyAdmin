@@ -3,6 +3,7 @@ package com.notadeveloper.app.partyyyadmin;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -18,6 +19,8 @@ public class OrderHolder extends RecyclerView.ViewHolder {
     final TextView deliverby;
     final TextView details;
     final CardView cv1;
+    final Switch switch1;
+    final TextView flavours;
 
     public OrderHolder(View itemView) {
         super(itemView);
@@ -29,5 +32,8 @@ public class OrderHolder extends RecyclerView.ViewHolder {
         noofpot= (TextView) itemView.findViewById(R.id.noofpot);
         deliverby = (TextView) itemView.findViewById(R.id.deliverby);
         details = (TextView) itemView.findViewById(R.id.details);
+        switch1 = (Switch)itemView.findViewById(R.id.switch1);
+        flavours = (TextView)itemView.findViewById(R.id.flavours);
+
     }
 }
