@@ -66,6 +66,7 @@ public class ClubsMain extends AppCompatActivity {
   private static final int REQUEST_CODE_CHOOSE = 420;
   private static final int REQUEST_CODE_CHOOSE_MENU = 666;
   private static final String TAG = ClubsMain.class.getSimpleName();
+  private static final int IMAGE_CAPTURE_2 = 102;
 
   static String datetxt;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -144,6 +145,7 @@ public class ClubsMain extends AppCompatActivity {
   private ArrayList<String> pathList;
   private ArrayList<String> temp;
   private ArrayList<Uri> mArrayUri;
+  private ArrayList<Uri> mArrayUriMenu;
 
 
   @Override
@@ -151,6 +153,7 @@ public class ClubsMain extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_clubs_main);
       mArrayUri = new ArrayList<Uri>();
+    mArrayUriMenu = new ArrayList<Uri>();
     MultiplePermissionsListener dialogPermissionListener =
         DialogOnAnyDeniedMultiplePermissionsListener.Builder
             .withContext(this)
@@ -259,7 +262,7 @@ public class ClubsMain extends AppCompatActivity {
     camerabutton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        saveImage();
+        saveImage(IMAGE_CAPTURE);
       }
     });
 
@@ -283,12 +286,12 @@ public class ClubsMain extends AppCompatActivity {
     menucamerabutton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        saveImage();
+        saveImage(IMAGE_CAPTURE_2);
       }
     });
   }
 
-  private void saveImage() {
+  private void saveImage(int code) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -306,7 +309,7 @@ public class ClubsMain extends AppCompatActivity {
                         Log.i(TAG, "Image saved at "+ photoURI);
                         mImageUri = photoURI;
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(takePictureIntent, IMAGE_CAPTURE);
+                           startActivityForResult(takePictureIntent, code);
                     }
               }
         }
@@ -480,15 +483,18 @@ public class ClubsMain extends AppCompatActivity {
           String date = formatter.format(new Date(cal.getTimeInMillis()));
           final DatabaseReference mDatabase =
               ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
-
+          final ArrayList<Uri> tempUri = new ArrayList<Uri>();
+          tempUri.addAll(mArrayUri);
+          tempUri.addAll(mArrayUriMenu);
+          index2 = mArrayUri.size();
           final ArrayList<String> imagesUri = new ArrayList<String>();
-          for (index = 0; index < mArrayUri.size(); index++) {
+          for (index = 0; index < tempUri.size(); index++) {
 
             StorageReference storageRef = storage.getReference()
                 .child("clubs")
                 .child(String.valueOf(estimatedServerTimeMs))
                 .child(String.valueOf(index));
-            UploadTask uploadTask = storageRef.putFile(mArrayUri.get(index));
+            UploadTask uploadTask = storageRef.putFile(tempUri.get(index));
 
             // Register observers to listen for when the download is done or if it fails
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -516,8 +522,8 @@ public class ClubsMain extends AppCompatActivity {
                   imagesUri.add(downloadUrl.toString());
                 }
 
-                if (index == mArrayUri.size() && imagesUri.size() == mArrayUri.size()) {
-                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + mArrayUri.toString());
+                if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
+                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
 
                   ArrayList<String> clublist = new ArrayList<String>();
                   clublist.addAll(imagesUri.subList(0, index2));
@@ -613,16 +619,15 @@ public class ClubsMain extends AppCompatActivity {
     if (requestCode == REQUEST_CODE_CHOOSE_MENU && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
         ClipData mClipData = data.getClipData();
-        index2 = mArrayUri.size();
         for (int i = 0; i < mClipData.getItemCount(); i++) {
           ClipData.Item item = mClipData.getItemAt(i);
           Uri uri = item.getUri();
-          mArrayUri.add(uri);
+          mArrayUriMenu.add(uri);
         }
         menuadapter = new MultipleImagesAdapter(
-            new ArrayList<Uri>(mArrayUri.subList(index2, mArrayUri.size())), this);
+            mArrayUriMenu, this);
         recyclerViewmenu.setAdapter(menuadapter);
-        Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
+        Log.e(TAG, "onActivityResult: " + mArrayUriMenu.toString());
       }
     }
     //if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -642,12 +647,20 @@ public class ClubsMain extends AppCompatActivity {
     {
 
       mArrayUri.add(mImageUri);
+      adapter =
+          new MultipleImagesAdapter(mArrayUri,
+              this);
+      recyclerView.setAdapter(adapter);
+      Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUri.toString());
+    }
+    if (requestCode == IMAGE_CAPTURE_2 && resultCode == RESULT_OK) {
+
+      mArrayUriMenu.add(mImageUri);
       menuadapter =
-          new MultipleImagesAdapter(new ArrayList<Uri>(mArrayUri.subList(index2, mArrayUri.size())),
+          new MultipleImagesAdapter(mArrayUriMenu,
               this);
       recyclerViewmenu.setAdapter(menuadapter);
-      Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUri.toString());
-        
+      Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUriMenu.toString());
     }
   }
 }
