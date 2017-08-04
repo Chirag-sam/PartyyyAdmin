@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Club
 {
+    String clubid;
     ArrayList<String> clubpicture;
     String clubname;
     String time;
@@ -22,7 +23,10 @@ public class Club
     ArrayList<String> menupicture;
     ArrayList<String> utils;
 
-    public Club(ArrayList<String> clubpicture, String clubname, String time, String time1,
+    public Club()
+    {}
+
+    public Club(String clubid, ArrayList<String> clubpicture, String clubname, String time, String time1,
         String email, String number, String address1, String address2, String address3,
         String pin, String description, ArrayList<String> menupicture,
         ArrayList<String> utils) {
@@ -39,6 +43,15 @@ public class Club
         this.description = description;
         this.menupicture = menupicture;
         this.utils = utils;
+        this.clubid = clubid;
+    }
+
+    public String getClubid() {
+        return clubid;
+    }
+
+    public void setClubid(String clubid) {
+        this.clubid = clubid;
     }
 
     public ArrayList<String> getClubpicture() {

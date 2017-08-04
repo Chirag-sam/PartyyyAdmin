@@ -146,13 +146,54 @@ public class ClubsMain extends AppCompatActivity {
   private ArrayList<String> temp;
   private ArrayList<Uri> mArrayUri;
   private ArrayList<Uri> mArrayUriMenu;
+    Club c = new Club();
 
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_clubs_main);
-      mArrayUri = new ArrayList<Uri>();
+
+
+
+    String s = getIntent().getStringExtra("First time");
+      String s1 = getIntent().getStringExtra("clubid");
+
+    if(s.equals("False"))
+    {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        ref = mDatabase.child("clubs").child(s1);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                c=dataSnapshot.getValue(Club.class);
+                clubname.setText(c.getClubname());
+                time.setText(c.getTime());
+                time1.setText(c.getTime1());
+                mEmail.setText(c.getEmail());
+                mNumber.setText(c.getNumber());
+                address1.setText(c.getAddress1());
+                address2.setText(c.getAddress2());
+                address3.setText(c.getAddress3());
+                pincode.setText(c.getPin());
+                mText.setText(c.getDescription());
+                ArrayList<String> ar = new ArrayList<String>();
+                ar=c.getUtils();
+                if(ar.contains("Parking"))
+                    parking.setChecked(true);
+                if(ar.contains("Swimming"))
+                    swimming.setChecked(true);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    mArrayUri = new ArrayList<Uri>();
     mArrayUriMenu = new ArrayList<Uri>();
     MultiplePermissionsListener dialogPermissionListener =
         DialogOnAnyDeniedMultiplePermissionsListener.Builder
@@ -530,7 +571,7 @@ public class ClubsMain extends AppCompatActivity {
                   ArrayList<String> menulist = new ArrayList<String>();
                   menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
 
-                  Club cl = new Club(clublist, a, c, d, e, f, g, h, i, j, l, menulist, utils);
+                  Club cl = new Club(String.valueOf(estimatedServerTimeMs),clublist, a, c, d, e, f, g, h, i, j, l, menulist, utils);
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   mprogressbar.setProgress(100);

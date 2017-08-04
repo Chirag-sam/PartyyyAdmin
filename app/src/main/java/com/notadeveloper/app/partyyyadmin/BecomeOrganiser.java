@@ -136,8 +136,27 @@ public class BecomeOrganiser extends AppCompatActivity {
       mDatabase.child("users").child(uid).child("name").setValue(c);
       mDatabase.child("users").child(uid).child("email").setValue(email);
 
-      Intent i = new Intent(BecomeOrganiser.this, OrganizerActivity.class);
-      startActivity(i);
+        String s;
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+             s = bundle.getString("name");
+        }
+        else s=" ";
+
+      if(s.equals("party"))
+      {
+        Intent i = new Intent(BecomeOrganiser.this, OrganizerActivity.class);
+        startActivity(i);
+      }
+      else
+      {
+        Intent i = new Intent(BecomeOrganiser.this, ClubsMain.class);
+        i.putExtra("First time","True");
+          i.putExtra("clubid"," ");
+        startActivity(i);
+      }
+
     }
   }
 }

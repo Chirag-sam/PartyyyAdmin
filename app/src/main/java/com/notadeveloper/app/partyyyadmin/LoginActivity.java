@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
   private DatabaseReference ref;
   private FirebaseAuth mAuth;
   private ProgressDialog mprogressDialog;
+    Users u = new Users();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                                                       mprogressDialog.dismiss();
                                                         Intent myIntent =
                                                                 new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                                        myIntent.putExtra("ID", "party");
                                                         startActivity(myIntent);
                                                         finish();
                                                     } else {
@@ -156,13 +158,17 @@ public class LoginActivity extends AppCompatActivity {
                                                     Users u = dataSnapshot.getValue(Users.class);
                                                     if (u == null) {
                                                         mprogressDialog.dismiss();
-                                                        Intent myIntent = new Intent(LoginActivity.this, ClubsMain.class);
+                                                        Intent myIntent = new Intent(LoginActivity.this, BecomeOrganiser.class);
+                                                        myIntent.putExtra("ID", "club");
                                                         startActivity(myIntent);
                                                         finish();
                                                     } else {
                                                         mprogressDialog.dismiss();
+                                                        getUser();
                                                         Intent myIntent =
                                                                 new Intent(LoginActivity.this, ClubsMain.class);
+                                                        myIntent.putExtra("First time","False");
+                                                        myIntent.putExtra("clubid",u.getUid().toString());
                                                         startActivity(myIntent);
                                                         finish();
                                                     }
@@ -224,4 +230,22 @@ public class LoginActivity extends AppCompatActivity {
           }
         });
   }
+    void getUser() {
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = mUser.getUid();
+        final DatabaseReference mDatabase =
+                FirebaseDatabase.getInstance().getReference().child("users").child(uid);
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                u = dataSnapshot.getValue(Users.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
