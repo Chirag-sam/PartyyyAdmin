@@ -158,11 +158,13 @@ public class BecomeOrganiser extends AppCompatActivity {
       {
         Intent i = new Intent(BecomeOrganiser.this, OrganizerActivity.class);
         startActivity(i);
+        finish();
       }
       else
       {
         Intent i = new Intent(BecomeOrganiser.this, ClubsMain.class);
         startActivity(i);
+        finish();
       }
 
     }

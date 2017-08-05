@@ -420,6 +420,7 @@ public class ClubsMain extends AppCompatActivity {
         focusView.requestFocus();
       }
     } else {
+      mConfirm.setEnabled(false);
 
       final Calendar cal = Calendar.getInstance();
       mprogressbar.setIndeterminate(true);
@@ -492,8 +493,11 @@ public class ClubsMain extends AppCompatActivity {
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   mprogressbar.setProgress(100);
-                  Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
+                  Toast.makeText(ClubsMain.this, "Uploaded details successfully!",
                       Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(ClubsMain.this, ClubsMain.class);
+                    startActivity(i);
+                    finish();
                 }
               }
             });
@@ -558,22 +562,23 @@ public class ClubsMain extends AppCompatActivity {
           address3.setText(c.getAddress3());
           pincode.setText(c.getPin());
           mText.setText(c.getDescription());
-            ArrayList<Uri> ars = new ArrayList<Uri>();
+            if(c.getMenupicture().size()!=0)
+            {ArrayList<Uri> ars = new ArrayList<Uri>();
             for(int i = 0;i<c.getMenupicture().size();i++)
             {
                 ars.add(Uri.parse(c.getMenupicture().get(i)));
             }
           RecyclerView.Adapter menuadapter =
                   new MultipleImagesAdapter(ars, getApplicationContext());
-          recyclerViewmenu.setAdapter(menuadapter);
+          recyclerViewmenu.setAdapter(menuadapter);}
 
-            ArrayList<Uri> ars1 = new ArrayList<Uri>();
+            ArrayList<Uri> arsl = new ArrayList<Uri>();
             for(int j = 0;j<c.getClubpicture().size();j++)
             {
-                ars.add(Uri.parse(c.getClubpicture().get(j)));
+                arsl.add(Uri.parse(c.getClubpicture().get(j)));
             }
             RecyclerView.Adapter clubadapter =
-                    new MultipleImagesAdapter(ars, getApplicationContext());
+                    new MultipleImagesAdapter(arsl, getApplicationContext());
             recyclerView.setAdapter(clubadapter);
 
           ArrayList<String> ar = c.getUtils();

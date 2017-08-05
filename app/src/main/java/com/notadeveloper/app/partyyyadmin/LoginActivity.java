@@ -167,6 +167,14 @@ public class LoginActivity extends AppCompatActivity {
                                       }
                                     });
                           }
+                          else if (email.equals("admin@admin.com"))
+                          {
+                            mprogressDialog.dismiss();
+                            Intent myIntent =
+                                    new Intent(LoginActivity.this, TheAdminActivity.class);
+                            startActivity(myIntent);
+                            finish();
+                          }
                         } else {
                           mprogressDialog.dismiss();
                           Toast.makeText(LoginActivity.this, "Auth Fail", Toast.LENGTH_SHORT)

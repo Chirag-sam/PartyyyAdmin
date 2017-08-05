@@ -3,6 +3,8 @@
     <string name="title_activity_party_detail">My Party Info</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="club">"@club.com"</string>
+    <string name="pat">"@pat.com"</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

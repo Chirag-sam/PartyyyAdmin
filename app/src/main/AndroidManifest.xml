@@ -35,7 +35,8 @@
         <activity
             android:name=".SheeshaAdminMain"
             android:theme="@style/AppThemenotool" />
-        <activity android:name=".ClubsMain"></activity>
+        <activity android:name=".ClubsMain" />
+        <activity android:name=".TheAdminActivity"></activity>
     </application>
 
 </manifest>

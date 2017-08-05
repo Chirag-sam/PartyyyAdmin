@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.notadeveloper.app.partyyyadmin.TheAdminActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/title1"
+        android:layout_toLeftOf="@+id/clubte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type email here"
+            android:maxLines="1"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/title2"
+        android:layout_toLeftOf="@+id/clubte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title1">
+        <AutoCompleteTextView
+            android:id="@+id/title22"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter password here"
+            android:maxLines="1"
+            />
+    </android.support.design.widget.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/club"
+        android:layout_alignParentRight="true"
+        android:textSize="20dp"
+        android:layout_alignBottom="@+id/title1"
+        android:id="@+id/clubte"
+
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD"
+        android:theme="@style/AccentButton"
+        android:layout_alignParentRight="true"
+        android:id="@+id/add"
+        android:layout_below="@+id/title2"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tit1"
+        android:layout_toLeftOf="@+id/partyte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add">
+        <AutoCompleteTextView
+            android:id="@+id/tit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type email here"
+            android:maxLines="1"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tit2"
+        android:layout_toLeftOf="@+id/clubte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tit1">
+        <AutoCompleteTextView
+            android:id="@+id/tit22"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter password here"
+            android:maxLines="1"
+            />
+    </android.support.design.widget.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pat"
+        android:layout_alignParentRight="true"
+        android:textSize="20dp"
+        android:layout_alignBottom="@+id/tit1"
+        android:id="@+id/partyte"
+
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD"
+        android:theme="@style/AccentButton"
+        android:layout_alignParentRight="true"
+        android:id="@+id/add1"
+        android:layout_below="@+id/tit2"/>
+
+</RelativeLayout>
