@@ -27,9 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +44,7 @@ import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,6 +53,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -293,223 +296,7 @@ public class ClubsMain extends AppCompatActivity {
 
   @OnClick(R.id.confirm)
   public void onClickcon() {
-
-    boolean cancel = false;
-    View focusView = null;
-
-    final String a = clubname.getText().toString();
-    final String c = time.getText().toString();
-    final String d = time1.getText().toString();
-    final String e = mEmail.getText().toString();
-    final String f = mNumber.getText().toString();
-    final String g = address1.getText().toString();
-    final String h = address2.getText().toString();
-    final String i = address3.getText().toString();
-    final String j = pincode.getText().toString();
-    final String l = mText.getText().toString();
-    final ArrayList<String> utils = new ArrayList<>();
-
-    if (parking.isChecked()) {
-      utils.add(parking.getText().toString());
-    }
-    if (swimming.isChecked()) {
-      utils.add(swimming.getText().toString());
-    }
-
-    if (isEmpty(a)) {
-      clubname1.setError("Field cannot be empty");
-      focusView = clubname1;
-      cancel = true;
-    } else {
-      clubname1.setError(null);
-    }
-    if (c.equals("MM:HH")) {
-
-      Snackbar.make(findViewById(android.R.id.content), "Please fill from time first",
-          Snackbar.LENGTH_SHORT)
-          // .setActionTextColor(ContextCompat.getColor(ClubsMain.this, R.color.tw__composer_red))
-
-          .show();
-      focusView = null;
-      cancel = true;
-    }
-        /*if (d.equals("MM:HH"))
-        {
-
-            Snackbar.make(findViewById(android.R.id.content), "Please fill to time first", Snackbar.LENGTH_SHORT)
-                    .setActionTextColor(getResources().getColor(R.color.mdtp_red))
-                    .show();
-            focusView = null;
-            cancel = true;
-        }*/
-    if (isEmpty(e)) {
-      mEmaila.setError("Field cannot be empty");
-      focusView = mEmaila;
-      cancel = true;
-    } else {
-      mEmaila.setError(null);
-    }
-    if (isEmpty(f)) {
-      mNumber1.setError("Field cannot be empty");
-      focusView = mNumber1;
-      cancel = true;
-    } else {
-      mNumber1.setError(null);
-    }
-    if (isEmpty(g)) {
-      add1lt.setError("Field cannot be empty");
-      focusView = add1lt;
-      cancel = true;
-    } else {
-      add1lt.setError(null);
-    }
-    if (isEmpty(h)) {
-      add2lt.setError("Field cannot be empty");
-      focusView = add2lt;
-      cancel = true;
-    } else {
-      add2lt.setError(null);
-    }
-    if (isEmpty(i)) {
-      add3lt.setError("Field cannot be empty");
-      focusView = add3lt;
-      cancel = true;
-    } else {
-      add3lt.setError(null);
-    }
-    if (isEmpty(j)) {
-      pinlt.setError("Field cannot be empty");
-      focusView = pinlt;
-      cancel = true;
-    } else {
-      pinlt.setError(null);
-    }
-
-    if (l.equals("Enter description here...")) {
-      Snackbar.make(findViewById(android.R.id.content), "Please give a description",
-          Snackbar.LENGTH_SHORT)
-
-          .show();
-      focusView = null;
-      cancel = true;
-    }
-    if (!isValidPhone(f)) {
-      mNumber1.setError("Invalid Phone");
-      focusView = mNumber1;
-      cancel = true;
-    } else {
-      mNumber1.setError(null);
-    }
-    if (!isValidEmail(e)) {
-      mEmaila.setError("Invalid Email");
-      focusView = mEmaila;
-      cancel = true;
-    } else {
-      mEmaila.setError(null);
-    }
-    if (mArrayUri != null && mArrayUri.size() != 0) {
-
-    } else {
-      Toast.makeText(this, "No Images Selected", Toast.LENGTH_SHORT).show();
-      cancel = true;
-    }
-    if (cancel) {
-      // There was an error; don't attempt login and focus the first
-      // form field with an error.
-      if (focusView != null) {
-        focusView.requestFocus();
-      }
-    } else {
-      mConfirm.setEnabled(false);
-
-      final Calendar cal = Calendar.getInstance();
-      mprogressbar.setIndeterminate(true);
-      DatabaseReference offsetRef =
-          FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
-      offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot snapshot) {
-          long offset = snapshot.getValue(Long.class);
-          if (u != null && u.getMyclub() != null) {
-            estimatedServerTimeMs = Long.parseLong(u.getMyclub().getClubid());
-          } else {
-            estimatedServerTimeMs = (System.currentTimeMillis() + offset);
-          }
-          cal.setTimeInMillis(estimatedServerTimeMs);
-          SimpleDateFormat formatter =
-              new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-          final DatabaseReference mDatabase =
-              ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
-          final ArrayList<Uri> tempUri = new ArrayList<Uri>();
-          tempUri.addAll(mArrayUri);
-          tempUri.addAll(mArrayUriMenu);
-          index2 = mArrayUri.size();
-          final ArrayList<String> imagesUri = new ArrayList<String>();
-          for (index = 0; index < tempUri.size(); index++) {
-
-            StorageReference storageRef = storage.getReference()
-                .child("clubs")
-                .child(String.valueOf(estimatedServerTimeMs))
-                .child(String.valueOf(index));
-            UploadTask uploadTask = storageRef.putFile(tempUri.get(index));
-
-            // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                Snackbar.make(findViewById(android.R.id.content), "Upload Failed Try Again",
-                    Snackbar.LENGTH_LONG);
-                // Handle unsuccessful uploads
-              }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-              @Override public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress =
-                    100.0 * (taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                System.out.println("Upload is " + progress + "% done");
-                int currentprogress = (int) progress;
-                mprogressbar.setIndeterminate(false);
-                mprogressbar.setProgress(currentprogress);
-              }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                if (downloadUrl != null) {
-                  imagesUri.add(downloadUrl.toString());
-                }
-
-                if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
-                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
-
-                  ArrayList<String> clublist = new ArrayList<>();
-                  clublist.addAll(imagesUri.subList(0, index2));
-                  ArrayList<String> menulist = new ArrayList<>();
-                  menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
-
-                  Club cl =
-                      new Club(String.valueOf(estimatedServerTimeMs), clublist, a, c, d, e, f, g, h,
-                          i, j, l, menulist, utils);
-                  mDatabase.setValue(cl);
-                  ref.child("users").child(uid).child("myclub").setValue(cl);
-                  mprogressbar.setProgress(100);
-                  Toast.makeText(ClubsMain.this, "Uploaded details successfully!",
-                      Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ClubsMain.this, ClubsMain.class);
-                    startActivity(i);
-                    finish();
-                }
-              }
-            });
-          }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError error) {
-          System.err.println("Listener was cancelled");
-        }
-      });
-    }
+      confirmclick();
   }
 
   private boolean isValidEmail(String email) {
@@ -566,19 +353,19 @@ public class ClubsMain extends AppCompatActivity {
             {ArrayList<Uri> ars = new ArrayList<Uri>();
             for(int i = 0;i<c.getMenupicture().size();i++)
             {
-                ars.add(Uri.parse(c.getMenupicture().get(i)));
+                mArrayUri.add(Uri.parse(c.getMenupicture().get(i)));
             }
           RecyclerView.Adapter menuadapter =
-                  new MultipleImagesAdapter(ars, getApplicationContext());
+                  new MultipleImagesAdapter(mArrayUri, getApplicationContext());
           recyclerViewmenu.setAdapter(menuadapter);}
 
             ArrayList<Uri> arsl = new ArrayList<Uri>();
             for(int j = 0;j<c.getClubpicture().size();j++)
             {
-                arsl.add(Uri.parse(c.getClubpicture().get(j)));
+                mArrayUriMenu.add(Uri.parse(c.getClubpicture().get(j)));
             }
             RecyclerView.Adapter clubadapter =
-                    new MultipleImagesAdapter(arsl, getApplicationContext());
+                    new MultipleImagesAdapter(mArrayUriMenu, getApplicationContext());
             recyclerView.setAdapter(clubadapter);
 
           ArrayList<String> ar = c.getUtils();
@@ -589,6 +376,12 @@ public class ClubsMain extends AppCompatActivity {
             swimming.setChecked(true);
           }
           mConfirm.setText("Update Details");
+            mConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    confirmclick();
+                }
+            });
         }
       }
 
@@ -649,5 +442,224 @@ public class ClubsMain extends AppCompatActivity {
       recyclerViewmenu.setAdapter(menuadapter);
       Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUriMenu.toString());
     }
+  }
+  void confirmclick()
+  {
+      boolean cancel = false;
+      View focusView = null;
+
+      final String a = clubname.getText().toString();
+      final String c = time.getText().toString();
+      final String d = time1.getText().toString();
+      final String e = mEmail.getText().toString();
+      final String f = mNumber.getText().toString();
+      final String g = address1.getText().toString();
+      final String h = address2.getText().toString();
+      final String i = address3.getText().toString();
+      final String j = pincode.getText().toString();
+      final String l = mText.getText().toString();
+      final ArrayList<String> utils = new ArrayList<>();
+
+      if (parking.isChecked()) {
+          utils.add(parking.getText().toString());
+      }
+      if (swimming.isChecked()) {
+          utils.add(swimming.getText().toString());
+      }
+
+      if (isEmpty(a)) {
+          clubname1.setError("Field cannot be empty");
+          focusView = clubname1;
+          cancel = true;
+      } else {
+          clubname1.setError(null);
+      }
+      if (c.equals("MM:HH")) {
+
+          Snackbar.make(findViewById(android.R.id.content), "Please fill from time first",
+                  Snackbar.LENGTH_SHORT)
+                  // .setActionTextColor(ContextCompat.getColor(ClubsMain.this, R.color.tw__composer_red))
+
+                  .show();
+          focusView = null;
+          cancel = true;
+      }
+        /*if (d.equals("MM:HH"))
+        {
+
+            Snackbar.make(findViewById(android.R.id.content), "Please fill to time first", Snackbar.LENGTH_SHORT)
+                    .setActionTextColor(getResources().getColor(R.color.mdtp_red))
+                    .show();
+            focusView = null;
+            cancel = true;
+        }*/
+      if (isEmpty(e)) {
+          mEmaila.setError("Field cannot be empty");
+          focusView = mEmaila;
+          cancel = true;
+      } else {
+          mEmaila.setError(null);
+      }
+      if (isEmpty(f)) {
+          mNumber1.setError("Field cannot be empty");
+          focusView = mNumber1;
+          cancel = true;
+      } else {
+          mNumber1.setError(null);
+      }
+      if (isEmpty(g)) {
+          add1lt.setError("Field cannot be empty");
+          focusView = add1lt;
+          cancel = true;
+      } else {
+          add1lt.setError(null);
+      }
+      if (isEmpty(h)) {
+          add2lt.setError("Field cannot be empty");
+          focusView = add2lt;
+          cancel = true;
+      } else {
+          add2lt.setError(null);
+      }
+      if (isEmpty(i)) {
+          add3lt.setError("Field cannot be empty");
+          focusView = add3lt;
+          cancel = true;
+      } else {
+          add3lt.setError(null);
+      }
+      if (isEmpty(j)) {
+          pinlt.setError("Field cannot be empty");
+          focusView = pinlt;
+          cancel = true;
+      } else {
+          pinlt.setError(null);
+      }
+
+      if (l.equals("Enter description here...")) {
+          Snackbar.make(findViewById(android.R.id.content), "Please give a description",
+                  Snackbar.LENGTH_SHORT)
+
+                  .show();
+          focusView = null;
+          cancel = true;
+      }
+      if (!isValidPhone(f)) {
+          mNumber1.setError("Invalid Phone");
+          focusView = mNumber1;
+          cancel = true;
+      } else {
+          mNumber1.setError(null);
+      }
+      if (!isValidEmail(e)) {
+          mEmaila.setError("Invalid Email");
+          focusView = mEmaila;
+          cancel = true;
+      } else {
+          mEmaila.setError(null);
+      }
+      if (mArrayUri != null && mArrayUri.size() != 0) {
+
+      } else {
+          Toast.makeText(this, "No Images Selected", Toast.LENGTH_SHORT).show();
+          cancel = true;
+      }
+      if (cancel) {
+          // There was an error; don't attempt login and focus the first
+          // form field with an error.
+          if (focusView != null) {
+              focusView.requestFocus();
+          }
+      } else {
+
+
+          final Calendar cal = Calendar.getInstance();
+          mprogressbar.setIndeterminate(true);
+          DatabaseReference offsetRef =
+                  FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
+          offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
+              @Override
+              public void onDataChange(DataSnapshot snapshot) {
+                  long offset = snapshot.getValue(Long.class);
+                  if (u != null && u.getMyclub() != null) {
+                      estimatedServerTimeMs = Long.parseLong(u.getMyclub().getClubid());
+                  } else {
+                      estimatedServerTimeMs = (System.currentTimeMillis() + offset);
+                  }
+                  cal.setTimeInMillis(estimatedServerTimeMs);
+                  SimpleDateFormat formatter =
+                          new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+                  final DatabaseReference mDatabase =
+                          ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
+                  final ArrayList<Uri> tempUri = new ArrayList<Uri>();
+                  tempUri.addAll(mArrayUri);
+                  tempUri.addAll(mArrayUriMenu);
+                  index2 = mArrayUri.size();
+                  final ArrayList<String> imagesUri = new ArrayList<String>();
+                  for (index = 0; index < tempUri.size(); index++) {
+
+                      StorageReference storageRef = storage.getReference()
+                              .child("clubs")
+                              .child(String.valueOf(estimatedServerTimeMs))
+                              .child(String.valueOf(index));
+                      UploadTask uploadTask = storageRef.putFile(tempUri.get(index));
+
+                      // Register observers to listen for when the download is done or if it fails
+                      uploadTask.addOnFailureListener(new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception exception) {
+                              Snackbar.make(findViewById(android.R.id.content), "Upload Failed Try Again",
+                                      Snackbar.LENGTH_LONG);
+                              // Handle unsuccessful uploads
+                          }
+                      }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                          @Override public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                              double progress =
+                                      100.0 * (taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                              System.out.println("Upload is " + progress + "% done");
+                              int currentprogress = (int) progress;
+                              mprogressbar.setIndeterminate(false);
+                              mprogressbar.setProgress(currentprogress);
+                          }
+                      }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                          @Override
+                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                              // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                              Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                              if (downloadUrl != null) {
+                                  imagesUri.add(downloadUrl.toString());
+                              }
+
+                              if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
+                                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
+
+                                  ArrayList<String> clublist = new ArrayList<>();
+                                  clublist.addAll(imagesUri.subList(0, index2));
+                                  ArrayList<String> menulist = new ArrayList<>();
+                                  menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
+
+                                  Club cl =
+                                          new Club(String.valueOf(estimatedServerTimeMs), clublist, a, c, d, e, f, g, h,
+                                                  i, j, l, menulist, utils);
+                                  mDatabase.setValue(cl);
+                                  ref.child("users").child(uid).child("myclub").setValue(cl);
+                                  mprogressbar.setProgress(100);
+                                  Toast.makeText(ClubsMain.this, "Uploaded details successfully!",
+                                          Toast.LENGTH_LONG).show();
+                                  Intent i = new Intent(ClubsMain.this, ClubsMain.class);
+                                  startActivity(i);
+                                  finish();
+                              }
+                          }
+                      });
+                  }
+              }
+
+              @Override
+              public void onCancelled(DatabaseError error) {
+                  System.err.println("Listener was cancelled");
+              }
+          });
+      }
   }
 }
