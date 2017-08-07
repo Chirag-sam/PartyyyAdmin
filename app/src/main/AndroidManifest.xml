@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.notadeveloper.app.partyyyadmin">
+    package="com.notadeveloper.app.patadmin">
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -35,8 +35,7 @@
         <activity
             android:name=".SheeshaAdminMain"
             android:theme="@style/AppThemenotool" />
-        <activity android:name=".ClubsMain" />
-        <activity android:name=".TheAdminActivity"></activity>
+        <activity android:name=".ClubsMain"></activity>
     </application>
 
 </manifest>

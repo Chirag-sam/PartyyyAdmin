@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Partyyy Admin</string>
+  <string name="app_name">P.A.T Admin</string>
     <string name="title_activity_party_detail">My Party Info</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.notadeveloper.app.partyyyadmin.BecomeOrganiser">
+    tools:context="com.notadeveloper.app.patadmin.BecomeOrganiser">
     <android.support.design.widget.TextInputLayout
         android:layout_marginTop="10dp"
         android:id="@+id/orgname1"
