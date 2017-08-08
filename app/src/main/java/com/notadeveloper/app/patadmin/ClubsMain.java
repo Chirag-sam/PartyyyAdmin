@@ -63,8 +63,6 @@ public class ClubsMain extends AppCompatActivity {
   private static final int REQUEST_CODE_CHOOSE_MENU = 666;
   private static final String TAG = ClubsMain.class.getSimpleName();
   private static final int IMAGE_CAPTURE_2 = 102;
-    private String st;
-
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
   @BindView(R.id.clubname)
@@ -115,6 +113,7 @@ public class ClubsMain extends AppCompatActivity {
   @BindView(R.id.addimages)
   Button addimages;
   @BindView(R.id.progressbar) ProgressBar mprogressbar;
+  private String st;
   private int index = 0;
   private int index2 = 0;
   private long estimatedServerTimeMs;
@@ -139,6 +138,7 @@ public class ClubsMain extends AppCompatActivity {
     setContentView(R.layout.activity_clubs_main);
     mArrayUri = new ArrayList<>();
     mArrayUriMenu = new ArrayList<>();
+    getUser();
     ButterKnife.bind(this);
     MultiplePermissionsListener dialogPermissionListener =
         DialogOnAnyDeniedMultiplePermissionsListener.Builder
@@ -439,10 +439,28 @@ public class ClubsMain extends AppCompatActivity {
           final DatabaseReference mDatabase =
               ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
           final ArrayList<Uri> tempUri = new ArrayList<Uri>();
-          tempUri.addAll(mArrayUri);
-          tempUri.addAll(mArrayUriMenu);
-          index2 = mArrayUri.size();
+          final ArrayList<String> clublist = new ArrayList<>();
+          final ArrayList<String> menulist = new ArrayList<>();
+          for (Uri pic : mArrayUri) {
+            if (pic.toString().startsWith("https://")) {
+              clublist.add(pic.toString());
+            } else {
+              tempUri.add(pic);
+            }
+          }
+          index2 = tempUri.size();
+          for (Uri pic : mArrayUriMenu) {
+            if (pic.toString().startsWith("https://")) {
+              menulist.add(pic.toString());
+            } else {
+              tempUri.add(pic);
+            }
+          }
+
+          Log.e(TAG, "onDataChange: " + index2);
           final ArrayList<String> imagesUri = new ArrayList<String>();
+          if (tempUri.size() != 0) {
+
           for (index = 0; index < tempUri.size(); index++) {
 
             StorageReference storageRef = storage.getReference()
@@ -472,9 +490,9 @@ public class ClubsMain extends AppCompatActivity {
                 if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
                   Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
 
-                  ArrayList<String> clublist = new ArrayList<>();
+
                   clublist.addAll(imagesUri.subList(0, index2));
-                  ArrayList<String> menulist = new ArrayList<>();
+
                   menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
 
                   Club cl =
@@ -486,26 +504,37 @@ public class ClubsMain extends AppCompatActivity {
 
                   Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
                       Toast.LENGTH_LONG).show();
-                    DatabaseReference df = ref.child("users").child(uid).child("myclub").child("clubid");
-                    df.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            st = dataSnapshot.getValue(String.class);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                  Intent myIntent =
-                          new Intent(ClubsMain.this, EditDetailedClubActivity.class);
-                    myIntent.putExtra("Club_id", st);
-                  startActivity(myIntent);
-                  finish();
+                  //  DatabaseReference df = ref.child("users").child(uid).child("myclub").child("clubid");
+                  //  df.addListenerForSingleValueEvent(new ValueEventListener() {
+                  //      @Override
+                  //      public void onDataChange(DataSnapshot dataSnapshot) {
+                  //          st = dataSnapshot.getValue(String.class);
+                  //      }
+                  //
+                  //      @Override
+                  //      public void onCancelled(DatabaseError databaseError) {
+                  //
+                  //      }
+                  //  });
+                  //Intent myIntent =
+                  //        new Intent(ClubsMain.this, EditDetailedClubActivity.class);
+                  //  myIntent.putExtra("Club_id", st);
+                  //startActivity(myIntent);
+                  //finish();
                 }
               }
             });
+          }
+          } else {
+            Club cl =
+                new Club(String.valueOf(estimatedServerTimeMs), clublist, a, c, d, e, f, g, h,
+                    i, j, l, menulist, utils);
+            mDatabase.setValue(cl);
+            ref.child("users").child(uid).child("myclub").setValue(cl);
+            hideprogressbar();
+
+            Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
+                Toast.LENGTH_LONG).show();
           }
         }
 
@@ -557,6 +586,8 @@ public class ClubsMain extends AppCompatActivity {
       public void onDataChange(DataSnapshot dataSnapshot) {
         u = dataSnapshot.getValue(Users.class);
         if (u != null && u.getMyclub() != null) {
+          mArrayUri.clear();
+          mArrayUriMenu.clear();
           Club c = u.getMyclub();
           clubname.setText(c.getClubname());
           time.setText(c.getTime());
@@ -568,6 +599,21 @@ public class ClubsMain extends AppCompatActivity {
           address3.setText(c.getAddress3());
           pincode.setText(c.getPin());
           mText.setText(c.getDescription());
+          if (c.getClubpicture() != null) {
+            for (String pic : c.getClubpicture())
+              mArrayUri.add(Uri.parse(pic));
+            RecyclerView.Adapter adapter = new MultipleImagesAdapter(mArrayUri, ClubsMain.this);
+            recyclerView.setAdapter(adapter);
+          }
+          if (c.getMenupicture() != null) {
+            for (String pic : c.getMenupicture())
+              mArrayUriMenu.add(Uri.parse(pic));
+            RecyclerView.Adapter adapter2 =
+                new MultipleImagesAdapter(mArrayUriMenu, ClubsMain.this);
+            recyclerViewmenu.setAdapter(adapter2);
+          }
+
+
           ArrayList<String> ar = c.getUtils();
           if (ar.contains("Parking")) {
             parking.setChecked(true);

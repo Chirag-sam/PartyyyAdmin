@@ -164,28 +164,33 @@ public class LoginActivity extends AppCompatActivity {
                                         }
 
                                         else {
-                                            FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-                                            final String uid = mUser.getUid();
-                                            final DatabaseReference mDatabase =
-                                                    FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("myclub").child("clubid");
-
-                                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    s = dataSnapshot.getValue(String.class);
-                                                }
-
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                }
-                                            });
                                           mprogressDialog.dismiss();
                                           Intent myIntent =
-                                              new Intent(LoginActivity.this, EditDetailedClubActivity.class);
-                                            myIntent.putExtra("Club_id", s);
+                                              new Intent(LoginActivity.this, ClubsMain.class);
                                           startActivity(myIntent);
                                           finish();
+                                          //  FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+                                          //  final String uid = mUser.getUid();
+                                          //  final DatabaseReference mDatabase =
+                                          //          FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("myclub").child("clubid");
+                                          //
+                                          //  mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                          //      @Override
+                                          //      public void onDataChange(DataSnapshot dataSnapshot) {
+                                          //          s = dataSnapshot.getValue(String.class);
+                                          //      }
+                                          //
+                                          //      @Override
+                                          //      public void onCancelled(DatabaseError databaseError) {
+                                          //
+                                          //      }
+                                          //  });
+                                          //mprogressDialog.dismiss();
+                                          //Intent myIntent =
+                                          //    new Intent(LoginActivity.this, EditDetailedClubActivity.class);
+                                          //  myIntent.putExtra("Club_id", s);
+                                          //startActivity(myIntent);
+                                          //finish();
                                         }
                                       }
 
