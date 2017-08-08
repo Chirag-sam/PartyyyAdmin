@@ -63,6 +63,7 @@ public class ClubsMain extends AppCompatActivity {
   private static final int REQUEST_CODE_CHOOSE_MENU = 666;
   private static final String TAG = ClubsMain.class.getSimpleName();
   private static final int IMAGE_CAPTURE_2 = 102;
+    private String st;
 
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
@@ -165,7 +166,6 @@ public class ClubsMain extends AppCompatActivity {
         new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
     menucamerabutton = findViewById(R.id.menucamerabutton);
     addmenuimages = findViewById(R.id.addmenuimages);
-    getUser();
     time.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -483,8 +483,26 @@ public class ClubsMain extends AppCompatActivity {
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   hideprogressbar();
+
                   Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
                       Toast.LENGTH_LONG).show();
+                    DatabaseReference df = ref.child("users").child(uid).child("myclub").child("clubid");
+                    df.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            st = dataSnapshot.getValue(String.class);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                  Intent myIntent =
+                          new Intent(ClubsMain.this, EditDetailedClubActivity.class);
+                    myIntent.putExtra("Club_id", st);
+                  startActivity(myIntent);
+                  finish();
                 }
               }
             });
