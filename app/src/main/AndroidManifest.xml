@@ -37,6 +37,7 @@
             android:theme="@style/AppThemenotool" />
         <activity android:name=".ClubsMain" />
         <activity android:name=".EditDetailedClubActivity"></activity>
+        <activity android:name=".TheAdminActivity"></activity>
     </application>
 
 </manifest>

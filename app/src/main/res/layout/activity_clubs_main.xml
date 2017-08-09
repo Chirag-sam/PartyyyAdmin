@@ -23,7 +23,19 @@
         android:padding="20dp">
       <TextView android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Add pictures of club:"
+          android:text="Add display picture of club:"
+          android:textSize="20sp"
+          android:layout_marginTop="15dp"
+          />
+      <ImageButton
+          android:id="@+id/picture"
+          android:layout_width="match_parent"
+          android:layout_height="150dp"
+          android:contentDescription="Change Club Pic"
+          android:scaleType="fitXY"/>
+      <TextView android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Add more pictures of club:"
           android:textSize="20sp"
           android:layout_marginTop="15dp"
       />

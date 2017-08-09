@@ -50,15 +50,31 @@ public class EditDetailedClubActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_detailed_club);
         ButterKnife.bind(this);
-        s = getIntent().getStringExtra("Club_id");
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = mUser.getUid();
+        final DatabaseReference mDatabase =
+                FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("myclub").child("clubid");
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                s = dataSnapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         insertValues();
     }
 
     void insertValues() {
         FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = mUser.getUid();
+        Club cl = new Club();
         final DatabaseReference mDatabase =
-                FirebaseDatabase.getInstance().getReference().child("clubs").child(s);
+                FirebaseDatabase.getInstance().getReference().child("clubs").child(cl.getClubid());
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

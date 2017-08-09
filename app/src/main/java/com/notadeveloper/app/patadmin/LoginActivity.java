@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                                           startActivity(myIntent);
                                           finish();
                                         }
-                                        else if(u.getMyclub()==null)
+                                        else if(u.getMyclub() == null)
                                         {
                                             mprogressDialog.dismiss();
                                             Intent myIntent =
