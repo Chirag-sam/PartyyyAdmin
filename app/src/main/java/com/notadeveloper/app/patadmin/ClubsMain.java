@@ -36,7 +36,6 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,7 +55,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.mikelau.croperino.Croperino;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -452,7 +450,7 @@ public class ClubsMain extends AppCompatActivity {
     } else {
       mEmaila.setError(null);
     }
-      if (photoUrl==null) {
+    if (photoUrl == null || photoUrl.isEmpty()) {
           Toast.makeText(this, "Main club picture not uploaded!!", Toast.LENGTH_SHORT).show();
           cancel = true;
       } else {
@@ -740,21 +738,23 @@ public class ClubsMain extends AppCompatActivity {
       switch (requestCode) {
           case CroperinoConfig.REQUEST_TAKE_PHOTO:
               if (resultCode == Activity.RESULT_OK) {
-                  Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 1, 1, 0,
+                Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16,
+                    9, 0,
                           0);
               }
               break;
           case CroperinoConfig.REQUEST_PICK_FILE:
               if (resultCode == Activity.RESULT_OK) {
                   CroperinoFileUtil.newGalleryFile(data, ClubsMain.this);
-                  Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 1, 1, 0,
+                Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16,
+                    9, 0,
                           0);
               }
               break;
           case CroperinoConfig.REQUEST_CROP_PHOTO:
               if (resultCode == Activity.RESULT_OK) {
                   Uri i = Uri.fromFile(CroperinoFileUtil.getmFileTemp());
-                  picture.setImageURI(i);
+                Glide.with(this).load(i).into(picture);
                   UploadTask uploadTask = imagesRef.putFile(i);
 
                   // Register observers to listen for when the download is done or if it fails

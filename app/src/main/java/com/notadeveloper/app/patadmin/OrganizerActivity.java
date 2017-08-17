@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,6 +40,7 @@ public class OrganizerActivity extends AppCompatActivity {
   @BindView(R.id.toolbar) Toolbar toolbar;
   @BindView(R.id.fab1) FabSpeedDial fab;
   private Users u = new Users();
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -131,4 +134,34 @@ public class OrganizerActivity extends AppCompatActivity {
     builder.show();
     //  super.onBackPressed();
   }
+
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.about:
+        AlertDialog.Builder builder = new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher)
+            .setMessage("Not A Developer\n")
+            .setTitle("About Pat Admin")
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+              }
+            });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        break;
+      case R.id.logout:
+        FirebaseAuth.getInstance().signOut();
+        finish();
+        break;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
 }
