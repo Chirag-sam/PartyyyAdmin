@@ -37,6 +37,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,6 +78,8 @@ public class ClubsMain extends AppCompatActivity {
   private static final int REQUEST_CODE_CHOOSE_MENU = 666;
   private static final String TAG = ClubsMain.class.getSimpleName();
   private static final int IMAGE_CAPTURE_2 = 102;
+  private final int PLACE_PICKER_REQUEST = 1010;
+  private String locationurl;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
   @BindView(R.id.clubname)
@@ -331,7 +338,13 @@ public class ClubsMain extends AppCompatActivity {
 
   @OnClick(R.id.location)
   public void onClickloc() {
+    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
+    try {
+      startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+      e.printStackTrace();
+    }
   }
 
   @OnClick(R.id.confirm)
@@ -547,7 +560,7 @@ public class ClubsMain extends AppCompatActivity {
 
                   Club cl =
                       new Club(String.valueOf(estimatedServerTimeMs),photoUrl, clublist, a, c, d, e, f, g, h,
-                          i, j, l, menulist, utils);
+                          i, j, l, menulist, utils,locationurl);
                   mDatabase.setValue(cl);
                   ref.child("users").child(uid).child("myclub").setValue(cl);
                   hideprogressbar();
@@ -578,7 +591,7 @@ public class ClubsMain extends AppCompatActivity {
           } else {
             Club cl =
                 new Club(String.valueOf(estimatedServerTimeMs),photoUrl, clublist, a, c, d, e, f, g, h,
-                    i, j, l, menulist, utils);
+                    i, j, l, menulist, utils,locationurl);
             mDatabase.setValue(cl);
             ref.child("users").child(uid).child("myclub").setValue(cl);
             hideprogressbar();
@@ -688,6 +701,12 @@ public class ClubsMain extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+      Place place = PlacePicker.getPlace(this, data);
+      locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s", place.getLatLng().latitude,place.getLatLng().longitude);
+      Log.e("loc", "onActivityResult: "+location );
+
+    }
     RecyclerView.Adapter adapter;
     if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
       if (data.getClipData() != null) {
@@ -802,6 +821,7 @@ public class ClubsMain extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+              FirebaseAuth.getInstance().signOut();
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(1);
             }

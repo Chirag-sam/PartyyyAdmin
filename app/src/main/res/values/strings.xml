@@ -5,7 +5,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="club">"@club.com"</string>
     <string name="pat">"@pat.com"</string>
-
+    <string name="googleapikey">AIzaSyBEFJOfP2iA7JZ7olEcoNXlMzrPrX5bIyI</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

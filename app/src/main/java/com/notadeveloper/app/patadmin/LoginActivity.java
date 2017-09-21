@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.credentials.CredentialRequest;
 import com.google.android.gms.auth.api.credentials.CredentialRequestResult;
+import com.google.android.gms.auth.api.credentials.CredentialsApi;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -296,7 +297,9 @@ public class LoginActivity extends AppCompatActivity implements
     // the user will either be automatically signed in or will be
     // presented with credential options to be used by the application
     // for sign in.
-    requestCredentials();
+
+    Auth.CredentialsApi.disableAutoSignIn(mCredentialsApiClient);
+    //requestCredentials();
   }
 
   @Override public void onConnectionSuspended(int i) {
@@ -314,6 +317,7 @@ public class LoginActivity extends AppCompatActivity implements
     // Create a Credential with the user's email as the ID and storing the password.  We
     // could also add 'Name' and 'ProfilePictureURL' but that is outside the scope of this
     // minimal sample.
+    if  (!emailt.isEmpty()||!passwordt.isEmpty()){
     final Credential credential = new Credential.Builder(emailt)
         .setPassword(passwordt)
         .build();
@@ -339,7 +343,7 @@ public class LoginActivity extends AppCompatActivity implements
             showToast("Credential Save Failed");
             hideProgress();
           }
-        });
+        });}
   }
 
   private void requestCredentials() {
@@ -454,6 +458,7 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
           Log.e("LoginAct", "Credential Read: NOT OK");
           showToast("Credential Read Failed");
+          proceed.setEnabled(true);
         }
 
         mIsResolving = false;
@@ -465,6 +470,7 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
           Log.e("LoginAct", "Credential Save: NOT OK");
           showToast("Credential Save Failed");
+          proceed.setEnabled(true);
         }
 
         mIsResolving = false;

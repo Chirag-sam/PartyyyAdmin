@@ -2,42 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.notadeveloper.app.patadmin">
 
-    <uses-feature android:name="android.hardware.camera" />
+  <uses-feature android:name="android.hardware.camera"/>
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".AddAParty" />
-        <activity android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+  <application
+      android:allowBackup="true"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:supportsRtl="true"
+      android:theme="@style/AppTheme">
+    <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="@string/googleapikey"/>
+    <activity android:name=".AddAParty"/>
+    <activity android:name=".LoginActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".OrganizerActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BecomeOrganiser" />
-        <activity android:name=".DetailedTicketActivity" />
-        <activity android:name=".MyTickets" />
-        <activity
-            android:name=".PartyDetailActivity"
-            android:label="@string/title_activity_party_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SheeshaAdminMain"
-            android:theme="@style/AppThemenotool" />
-        <activity android:name=".ClubsMain" />
-        <activity android:name=".EditDetailedClubActivity"></activity>
-        <activity android:name=".TheAdminActivity"></activity>
-    </application>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:name=".OrganizerActivity"
+        android:theme="@style/AppTheme.NoActionBar"/>
+    <activity android:name=".BecomeOrganiser"/>
+    <activity android:name=".DetailedTicketActivity"/>
+    <activity android:name=".MyTickets"/>
+    <activity
+        android:name=".PartyDetailActivity"
+        android:label="@string/title_activity_party_detail"
+        android:theme="@style/AppTheme.NoActionBar"/>
+    <activity
+        android:name=".SheeshaAdminMain"
+        android:theme="@style/AppThemenotool"/>
+    <activity android:name=".ClubsMain"/>
+    <activity android:name=".EditDetailedClubActivity"/>
+    <activity android:name=".TheAdminActivity"/>
+  </application>
 
 </manifest>

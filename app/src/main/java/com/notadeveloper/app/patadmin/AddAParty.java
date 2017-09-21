@@ -32,6 +32,10 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +48,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import com.mikelau.croperino.Croperino;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
@@ -62,66 +71,39 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
   static String datetxt;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
-  @BindView(R.id.picture)
-  ImageButton mProfile;
-  @BindView(R.id.title)
-  AutoCompleteTextView mTitle;
-  @BindView(R.id.title1)
-  TextInputLayout mTitle1;
-  @BindView(R.id.email)
-  AutoCompleteTextView mEmail;
-  @BindView(R.id.emaila)
-  TextInputLayout mEmaila;
-  @BindView(R.id.number)
-  AutoCompleteTextView mNumber;
-  @BindView(R.id.number1)
-  TextInputLayout mNumber1;
-  @BindView(R.id.tickets)
-  AutoCompleteTextView mTickets;
-  @BindView(R.id.tickets1)
-  TextInputLayout mTickets1;
-  @BindView(R.id.text)
-  TextView mText;
-  @BindView(R.id.confirm)
-  Button mConfirm;
-  @BindView(R.id.time)
-  TextView time;
-  @BindView(R.id.activity_signup)
-  LinearLayout activitySignup;
-  @BindView(R.id.time1)
-  TextView time1;
-  @BindView(R.id.location)
-  Button location;
-  @BindView(R.id.address1)
-  EditText address1;
-  @BindView(R.id.add1lt)
-  TextInputLayout add1lt;
-  @BindView(R.id.address2)
-  AutoCompleteTextView address2;
-  @BindView(R.id.add2lt)
-  TextInputLayout add2lt;
-  @BindView(R.id.imageView2)
-  ImageView imageView2;
-  @BindView(R.id.address3)
-  AutoCompleteTextView address3;
-  @BindView(R.id.add3lt)
-  TextInputLayout add3lt;
-  @BindView(R.id.imageView1)
-  ImageView imageView1;
-  @BindView(R.id.pincode)
-  EditText pincode;
-  @BindView(R.id.pinlt)
-  TextInputLayout pinlt;
-  @BindView(R.id.pricestag)
-  AutoCompleteTextView pricestag;
-  @BindView(R.id.pricestag1)
-  TextInputLayout pricestag1;
-  @BindView(R.id.pricecouple)
-  AutoCompleteTextView pricecouple;
+  @BindView(R.id.picture) ImageButton mProfile;
+  @BindView(R.id.title) AutoCompleteTextView mTitle;
+  @BindView(R.id.title1) TextInputLayout mTitle1;
+  @BindView(R.id.email) AutoCompleteTextView mEmail;
+  @BindView(R.id.emaila) TextInputLayout mEmaila;
+  @BindView(R.id.number) AutoCompleteTextView mNumber;
+  @BindView(R.id.number1) TextInputLayout mNumber1;
+  @BindView(R.id.tickets) AutoCompleteTextView mTickets;
+  @BindView(R.id.tickets1) TextInputLayout mTickets1;
+  @BindView(R.id.text) TextView mText;
+  @BindView(R.id.confirm) Button mConfirm;
+  @BindView(R.id.time) TextView time;
+
+  @BindView(R.id.time1) TextView time1;
+  @BindView(R.id.location) Button location;
+  @BindView(R.id.address1) EditText address1;
+  @BindView(R.id.add1lt) TextInputLayout add1lt;
+  @BindView(R.id.address2) AutoCompleteTextView address2;
+  @BindView(R.id.add2lt) TextInputLayout add2lt;
+  @BindView(R.id.imageView2) ImageView imageView2;
+  @BindView(R.id.address3) AutoCompleteTextView address3;
+  @BindView(R.id.add3lt) TextInputLayout add3lt;
+  @BindView(R.id.imageView1) ImageView imageView1;
+  @BindView(R.id.pincode) EditText pincode;
+  @BindView(R.id.pinlt) TextInputLayout pinlt;
+  @BindView(R.id.pricestag) AutoCompleteTextView pricestag;
+  @BindView(R.id.pricestag1) TextInputLayout pricestag1;
+  @BindView(R.id.pricecouple) AutoCompleteTextView pricecouple;
   @BindView(R.id.pricecouple1)
 
   TextInputLayout pricecouple1;
   long esttime;
+  @BindView(R.id.activity_signup) LinearLayout activitySignup;
   private long estimatedServerTimeMs;
   private String photoUrl;
   private FirebaseStorage storage;
@@ -132,27 +114,25 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
   private FirebaseAuth mAuth;
   private FirebaseUser mUser;
   private ArrayList myparties = new ArrayList();
+  private final int PLACE_PICKER_REQUEST = 1010;
+  private String locationurl;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_add_aparty);
     ButterKnife.bind(this);
     getUser();
-
     dates = findViewById(R.id.dates);
 
     dates.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
 
         DatePickerFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
       }
     });
     time.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
+      @Override public void onClick(View v) {
         Calendar mcurrentTime = Calendar.getInstance();
         int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -169,8 +149,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
       }
     });
     time1.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
+      @Override public void onClick(View v) {
         Calendar mcurrentTime = Calendar.getInstance();
         int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -195,8 +174,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
     CroperinoFileUtil.setupDirectory(AddAParty.this);
 
     mProfile.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
 
         imagesRef = storageRef.child("images").child("parties");
 
@@ -209,13 +187,18 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
     });
   }
 
-  @OnClick(R.id.location)
-  public void onClickloc() {
+  @OnClick(R.id.location) public void onClickloc() {
 
+    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+    try {
+      startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+      e.printStackTrace();
+    }
   }
 
-  @OnClick(R.id.confirm)
-  public void onClickcon() {
+  @OnClick(R.id.confirm) public void onClickcon() {
 
     boolean cancel = false;
     View focusView = null;
@@ -369,8 +352,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
       DatabaseReference offsetRef =
           FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
       offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot snapshot) {
+        @Override public void onDataChange(DataSnapshot snapshot) {
           long offset = snapshot.getValue(Long.class);
           estimatedServerTimeMs = (System.currentTimeMillis() + offset);
 
@@ -385,8 +367,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
           } catch (ParseException e1) {
             e1.printStackTrace();
           }
-          DatabaseReference mDatabase =
-              ref.child("parties").child(String.valueOf(unixtime));
+          DatabaseReference mDatabase = ref.child("parties").child(String.valueOf(unixtime));
           Log.e("usr", "u.ge" + u.getEmail() + u.getOrgname());
           myparties = u.getMyparties();
           if (myparties == null) {
@@ -396,24 +377,21 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
           myparties.add(String.valueOf(unixtime));
 
           ref.child("users").child(uid).child("myparties").setValue(myparties);
-          Party p = new Party(a, photoUrl, b, c, d, e, f, g, h, i, j, null, l, Integer.parseInt(k),
+          Party p = new Party(a, photoUrl, b, c, d, e, f, g, h, i, j, locationurl , l, Integer.parseInt(k),
               userid, nam, unixtime, m, n, unixtime);
           mDatabase.setValue(p);
-          Toast.makeText(AddAParty.this, "Redirect to payment gateway",
-              Toast.LENGTH_LONG).show();
+          Toast.makeText(AddAParty.this, "Redirect to payment gateway", Toast.LENGTH_LONG).show();
           finish();
         }
 
-        @Override
-        public void onCancelled(DatabaseError error) {
+        @Override public void onCancelled(DatabaseError error) {
           System.err.println("Listener was cancelled");
         }
       });
     }
   }
 
-  @Override
-  public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+  @Override public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
     // store the values selected into a Calendar instance
     final Calendar c = Calendar.getInstance();
     c.set(Calendar.YEAR, year);
@@ -433,11 +411,18 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
     Croperino.prepareCamera(AddAParty.this);
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     switch (requestCode) {
+      case PLACE_PICKER_REQUEST:
+        if (resultCode == RESULT_OK) {
+          Place place = PlacePicker.getPlace(this, data);
+           locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s", place.getLatLng().latitude,place.getLatLng().longitude);
+          Log.e("loc", "onActivityResult: "+location );
+
+        }
+        break;
       case CroperinoConfig.REQUEST_TAKE_PHOTO:
         if (resultCode == Activity.RESULT_OK) {
           Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), AddAParty.this, true, 1, 1, 0,
@@ -459,13 +444,11 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
 
           // Register observers to listen for when the download is done or if it fails
           uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
+            @Override public void onFailure(@NonNull Exception exception) {
               // Handle unsuccessful uploads
             }
           }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
               Uri downloadUrl = taskSnapshot.getDownloadUrl();
               photoUrl = downloadUrl.toString();
@@ -479,8 +462,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
     }
   }
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+  @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
       @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -536,15 +518,13 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
     DatabaseReference offsetRef =
         FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
     offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot snapshot) {
+      @Override public void onDataChange(DataSnapshot snapshot) {
         long offset = snapshot.getValue(Long.class);
         esttime = System.currentTimeMillis() + offset;
         imagesRef = storageRef.child("images").child("parties").child(String.valueOf(esttime));
       }
 
-      @Override
-      public void onCancelled(DatabaseError error) {
+      @Override public void onCancelled(DatabaseError error) {
         System.err.println("Listener was cancelled");
       }
     });
@@ -557,13 +537,11 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
         FirebaseDatabase.getInstance().getReference().child("users").child(uid);
 
     mDatabase.addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot dataSnapshot) {
+      @Override public void onDataChange(DataSnapshot dataSnapshot) {
         u = dataSnapshot.getValue(Users.class);
       }
 
-      @Override
-      public void onCancelled(DatabaseError databaseError) {
+      @Override public void onCancelled(DatabaseError databaseError) {
 
       }
     });
@@ -571,8 +549,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
 
   public static class DatePickerFragment extends DialogFragment {
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
       // Use the current time as the default values for the picker
       final Calendar c = Calendar.getInstance();
       int year = c.get(Calendar.YEAR);

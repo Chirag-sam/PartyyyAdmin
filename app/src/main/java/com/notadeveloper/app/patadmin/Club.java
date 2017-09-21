@@ -23,6 +23,7 @@ public class Club
     String description;
     ArrayList<String> menupicture;
     ArrayList<String> utils;
+    String location;
 
     public Club()
     {}
@@ -32,10 +33,9 @@ public class Club
     public Club(String clubid, String picture, ArrayList<String> clubpicture, String clubname, String time, String time1,
                 String email, String number, String address1, String address2, String address3,
                 String pin, String description, ArrayList<String> menupicture,
-                ArrayList<String> utils) {
+                ArrayList<String> utils,String location) {
         this.clubpicture = clubpicture;
         this.picture = picture;
-
         this.clubname = clubname;
         this.time = time;
         this.time1 = time1;
@@ -49,7 +49,17 @@ public class Club
         this.menupicture = menupicture;
         this.utils = utils;
         this.clubid = clubid;
+        this.location=location;
     }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public String getPicture() {
         return picture;
     }
