@@ -634,6 +634,8 @@ public class ClubsMain extends AppCompatActivity {
           address3.setText(c.getAddress3());
           pincode.setText(c.getPin());
           mText.setText(c.getDescription());
+          if (c.getUtils()!=null)
+            mSelectedItems=c.getUtils();
           if (c.getPicture() != null) GlideApp.with(ClubsMain.this).load(c.getPicture()).into(picture);
           if (c.getClubpicture() != null) {
             for (String pic : c.getClubpicture())
