@@ -5,7 +5,71 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="club">"@club.com"</string>
     <string name="pat">"@pat.com"</string>
+
     <string name="googleapikey">AIzaSyBEFJOfP2iA7JZ7olEcoNXlMzrPrX5bIyI</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="available_facilities">
+        <item>DJ</item>item>
+        <item>Live Music</item>
+        <item>Free Parking</item>
+        <item>Valet Parking Available</item>
+        <item>Outdoor Seating</item>
+        <item>Poolside</item>
+        <item>Entry Fee</item>
+        <item>Table reservation required</item>
+        <item>Restricted Entry</item>
+        <item>Air Conditioned</item>
+        <item>Kid Friendly</item>
+        <item>Disabled Friendly</item>
+        <item>Hookah</item>
+        <item>Pet Friendly</item>
+        <item>Private Dining Area Available</item>
+        <item>Self Service</item>
+        <item>Smoking Area</item>
+        <item>Wheelchair Accessible</item>
+        <item>Wifi</item>
+        <item>Gluten Free Options</item>
+        <item>Pure Veg</item>
+        <item>Serves Jain Food</item>
+        <item>Vegan Options</item>
+        <item>All Day Breakfast</item>
+        <item>Brunch</item>
+        <item>Buffet</item>
+        <item>Desserts and Bakes</item>
+        <item>Group Meal</item>
+        <item>Lunch Menu</item>
+        <item>Board Games</item>
+        <item>Dance Floor</item>
+        <item>Gaming Area</item>
+        <item>Karaoke</item>
+        <item>Live Entertainment</item>
+        <item>Live Sports Screening</item>
+        <item>Pool Table</item>
+        <item>Sports TV</item>
+        <item>City View</item>
+        <item>BYOB</item>
+        <item>Fullbar</item>
+        <item>Gastro Pub</item>
+        <item>Wine Tasting</item>
+        <item>Wine</item>
+        <item>Beer</item>
+        <item>Sodexo</item>
+        <item>Drive Thru</item>
+        <item>Rooftop</item>
+        <item>Home Baker</item>
+        <item>No Alcohol Available</item>
+        <item>Serves Cocktails</item>
+        <item>No Seating Available</item>
+        <item>Ticket Restaurant</item>
+        <item>Free Wifi</item>
+        <item>Paid Wifi</item>
+        <item>Table booking for Groups</item>
+        <item>Table booking not available</item>
+        <item>Wallet Accepted</item>
+        <item>Card Upon Delivery</item>
+        <item>Bira 91 Beer</item>
+        <item>Table Reservation Not Required</item>
+        <item>Drive in</item>
+    </string-array>
 </resources>

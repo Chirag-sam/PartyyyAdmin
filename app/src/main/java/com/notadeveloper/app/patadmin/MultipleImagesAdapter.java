@@ -32,7 +32,7 @@ public class MultipleImagesAdapter extends RecyclerView.Adapter<MultipleImagesAd
 
     @Override
     public void onBindViewHolder(ImagesViewHolder holder, final int position) {
-        Glide.with(context).load(images.get(position)).into(holder.imageView);
+        GlideApp.with(context).load(images.get(position)).into(holder.imageView);
       holder.imageButton.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View view) {
           images.remove(position);

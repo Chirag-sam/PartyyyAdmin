@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Process;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -17,14 +18,13 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,7 +37,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -79,56 +78,43 @@ public class ClubsMain extends AppCompatActivity {
   private static final String TAG = ClubsMain.class.getSimpleName();
   private static final int IMAGE_CAPTURE_2 = 102;
   private final int PLACE_PICKER_REQUEST = 1010;
+  @BindView(R.id.picture) ImageButton picture;
+  @BindView(R.id.recyclerview) RecyclerView recyclerview;
+  @BindView(R.id.camerabutton) Button camerabutton;
+  @BindView(R.id.timet) TextView timet;
+  @BindView(R.id.to) TextView to;
+  @BindView(R.id.recyclerview1) RecyclerView recyclerview1;
+  @BindView(R.id.addmenuimages) Button addmenuimages;
+  @BindView(R.id.menucamerabutton) Button menucamerabutton;
+  @BindView(R.id.showfacilities) TextView showfacilities;
+  @BindView(R.id.select_facilities) Button selectFacilities;
   private String locationurl;
   final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
   Users u = new Users();
-  @BindView(R.id.clubname)
-  AutoCompleteTextView mClubname;
-  @BindView(R.id.clubname1)
-  TextInputLayout mClubname1;
-  @BindView(R.id.email)
-  AutoCompleteTextView mEmail;
-  @BindView(R.id.emaila)
-  TextInputLayout mEmaila;
-  @BindView(R.id.number)
-  AutoCompleteTextView mNumber;
-  @BindView(R.id.number1)
-  TextInputLayout mNumber1;
-  @BindView(R.id.text)
-  TextView mText;
-  @BindView(R.id.confirm)
-  Button mConfirm;
-  @BindView(R.id.time)
-  TextView time;
-  @BindView(R.id.activity_signup)
-  LinearLayout activitySignup;
-  @BindView(R.id.time1)
-  TextView time1;
-  @BindView(R.id.location)
-  Button location;
-  @BindView(R.id.address1)
-  EditText address1;
-  @BindView(R.id.add1lt)
-  TextInputLayout add1lt;
-  @BindView(R.id.address2)
-  AutoCompleteTextView address2;
-  @BindView(R.id.add2lt)
-  TextInputLayout add2lt;
-  @BindView(R.id.imageView2)
-  ImageView imageView2;
-  @BindView(R.id.address3)
-  AutoCompleteTextView address3;
-  @BindView(R.id.add3lt)
-  TextInputLayout add3lt;
-  @BindView(R.id.imageView1)
-  ImageView imageView1;
-  @BindView(R.id.pincode)
-  EditText pincode;
-  @BindView(R.id.pinlt)
-  TextInputLayout pinlt;
+  @BindView(R.id.clubname) AutoCompleteTextView mClubname;
+  @BindView(R.id.clubname1) TextInputLayout mClubname1;
+  @BindView(R.id.email) AutoCompleteTextView mEmail;
+  @BindView(R.id.emaila) TextInputLayout mEmaila;
+  @BindView(R.id.number) AutoCompleteTextView mNumber;
+  @BindView(R.id.number1) TextInputLayout mNumber1;
+  @BindView(R.id.text) TextView mText;
+  @BindView(R.id.confirm) Button mConfirm;
+  @BindView(R.id.time) TextView time;
+  @BindView(R.id.activity_signup) LinearLayout activitySignup;
+  @BindView(R.id.time1) TextView time1;
+  @BindView(R.id.location) Button location;
+  @BindView(R.id.address1) EditText address1;
+  @BindView(R.id.add1lt) TextInputLayout add1lt;
+  @BindView(R.id.address2) AutoCompleteTextView address2;
+  @BindView(R.id.add2lt) TextInputLayout add2lt;
+  @BindView(R.id.imageView2) ImageView imageView2;
+  @BindView(R.id.address3) AutoCompleteTextView address3;
+  @BindView(R.id.add3lt) TextInputLayout add3lt;
+  @BindView(R.id.imageView1) ImageView imageView1;
+  @BindView(R.id.pincode) EditText pincode;
+  @BindView(R.id.pinlt) TextInputLayout pinlt;
   long esttime;
-  @BindView(R.id.addimages)
-  Button addimages;
+  @BindView(R.id.addimages) Button addimages;
   @BindView(R.id.progressbar) ProgressBar mprogressbar;
   private String st;
   private int index = 0;
@@ -136,64 +122,80 @@ public class ClubsMain extends AppCompatActivity {
   private long estimatedServerTimeMs;
   private FirebaseStorage storage;
   private DatabaseReference ref;
-  private TextInputLayout clubname1;
-  private AutoCompleteTextView clubname;
-  private CheckBox parking;
-  private CheckBox swimming;
-  private RecyclerView recyclerView;
-  private RecyclerView recyclerViewmenu;
-  private Button camerabutton;
-  private Button menucamerabutton;
-  private Button addmenuimages;
   private String mCurrentPhotoPath;
-    private StorageReference storageRef;
-    private StorageReference imagesRef;
-    private String photoUrl;
+  private StorageReference storageRef;
+  private StorageReference imagesRef;
+  private String photoUrl;
   private Uri mImageUri;
   private ArrayList<Uri> mArrayUri;
   private ArrayList<Uri> mArrayUriMenu;
-    private ImageButton picture;
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  private ArrayList<String> mSelectedItems = new ArrayList<>();
+  private String[] facilities;
+
+  @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_clubs_main);
-      ButterKnife.bind(this);
+    ButterKnife.bind(this);
     StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
     StrictMode.setVmPolicy(builder.build());
     mArrayUri = new ArrayList<>();
     mArrayUriMenu = new ArrayList<>();
+    facilities=getResources().getStringArray(R.array.available_facilities);
     getUser();
 
     MultiplePermissionsListener dialogPermissionListener =
-        DialogOnAnyDeniedMultiplePermissionsListener.Builder
-            .withContext(this)
+        DialogOnAnyDeniedMultiplePermissionsListener.Builder.withContext(this)
             .withTitle("Camera & Storage permission")
             .withMessage("Camera & Storage permission is for uploading images!")
             .withButtonText(android.R.string.ok)
             .withIcon(R.mipmap.ic_launcher)
             .build();
     Dexter.withActivity(this)
-        .withPermissions(Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
+        .withPermissions(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        .withListener(dialogPermissionListener).check();
-    clubname1 = findViewById(R.id.clubname1);
-    clubname = findViewById(R.id.clubname);
-    parking = findViewById(R.id.parking);
-    swimming = findViewById(R.id.swimming);
-      picture = findViewById(R.id.picture);
-    recyclerView = findViewById(R.id.recyclerview);
-    recyclerView.setLayoutManager(
-        new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-    camerabutton = findViewById(R.id.camerabutton);
-    recyclerViewmenu = findViewById(R.id.recyclerview1);
-    recyclerViewmenu.setLayoutManager(
-        new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
-    menucamerabutton = findViewById(R.id.menucamerabutton);
-    addmenuimages = findViewById(R.id.addmenuimages);
+        .withListener(dialogPermissionListener)
+        .check();
+    selectFacilities.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        mSelectedItems.clear();
+        AlertDialog.Builder facilitieslistdialog = new AlertDialog.Builder(ClubsMain.this);
+        // Set the dialog title
+        facilitieslistdialog.setTitle("Select Available Facilities")
+            // Specify the list array, the items to be selected by default (null for none),
+            // and the listener through which to receive callbacks when items are selected
+            .setMultiChoiceItems(facilities, null, new DialogInterface.OnMultiChoiceClickListener() {
+              @Override public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if (isChecked) {
+                  // If the user checked the item, add it to the selected items
+                  mSelectedItems.add(facilities[which]);
+                } else if (mSelectedItems.contains(facilities[which])) {
+                  // Else, if the item is already in the array, remove it
+                  mSelectedItems.remove(facilities[which]);
+                }
+              }
+            })
+            // Set the action buttons
+            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+              @Override public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK, so save the mSelectedItems results somewhere
+                // or return them to the component that opened the dialog
+                if (mSelectedItems != null && mSelectedItems.size() == 0) {
+                  Toast.makeText(ClubsMain.this, "Select Atleast One Club Facility!",
+                      Toast.LENGTH_SHORT).show();
+                } else {
+                  if (mSelectedItems != null)
+                  showfacilities.setText(TextUtils.join(",", mSelectedItems));
+                  dialog.dismiss();
+                }
+              }
+            });
+        facilitieslistdialog.show();
+      }
+    });
+
+
     time.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
+      @Override public void onClick(View v) {
         Calendar mcurrentTime = Calendar.getInstance();
         int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -210,8 +212,7 @@ public class ClubsMain extends AppCompatActivity {
       }
     });
     time1.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
+      @Override public void onClick(View v) {
         Calendar mcurrentTime = Calendar.getInstance();
         int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -230,8 +231,7 @@ public class ClubsMain extends AppCompatActivity {
     storage = FirebaseStorage.getInstance();
     ref = FirebaseDatabase.getInstance().getReference();
     addimages.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -240,15 +240,13 @@ public class ClubsMain extends AppCompatActivity {
       }
     });
     camerabutton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
         saveImage(IMAGE_CAPTURE);
       }
     });
 
     addmenuimages.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
         if (mArrayUri != null && mArrayUri.size() != 0) {
           Intent intent = new Intent();
           intent.setType("image/*");
@@ -263,37 +261,32 @@ public class ClubsMain extends AppCompatActivity {
       }
     });
     menucamerabutton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
+      @Override public void onClick(View view) {
         saveImage(IMAGE_CAPTURE_2);
       }
     });
 
+    storage = FirebaseStorage.getInstance();
+    storageRef = storage.getReference();
+    ref = FirebaseDatabase.getInstance().getReference();
 
+    new CroperinoConfig("IMG_" + System.currentTimeMillis() + ".jpg", "/MikeLau/Pictures",
+        Environment.getExternalStorageDirectory().getPath());
+    CroperinoFileUtil.setupDirectory(ClubsMain.this);
 
-      storage = FirebaseStorage.getInstance();
-      storageRef = storage.getReference();
-      ref = FirebaseDatabase.getInstance().getReference();
+    picture.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = mUser.getUid();
 
-      new CroperinoConfig("IMG_" + System.currentTimeMillis() + ".jpg", "/MikeLau/Pictures",
-              Environment.getExternalStorageDirectory().getPath());
-      CroperinoFileUtil.setupDirectory(ClubsMain.this);
+        getEstimatedServerTimeMs();
+        imagesRef = storageRef.child("clubspictures").child(uid);
 
-      picture.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
-              FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-              final String uid = mUser.getUid();
-
-
-              getEstimatedServerTimeMs();
-              imagesRef = storageRef.child("clubspictures").child(uid);
-
-              if (CroperinoFileUtil.verifyStoragePermissions(ClubsMain.this)) {
-                  prepareChooser();
-              }
-          }
-      });
+        if (CroperinoFileUtil.verifyStoragePermissions(ClubsMain.this)) {
+          prepareChooser();
+        }
+      }
+    });
   }
 
   private void saveImage(int code) {
@@ -324,11 +317,9 @@ public class ClubsMain extends AppCompatActivity {
     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(new Date());
     String imageFileName = "JPEG_" + timeStamp + "_";
     File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    File image = File.createTempFile(
-        imageFileName,  /* prefix */
+    File image = File.createTempFile(imageFileName,  /* prefix */
         ".jpg",         /* suffix */
-        storageDir      /* directory */
-    );
+        storageDir      /* directory */);
 
     // Save a file: path for use with ACTION_VIEW intents
     mCurrentPhotoPath = image.getAbsolutePath();
@@ -336,8 +327,7 @@ public class ClubsMain extends AppCompatActivity {
     return image;
   }
 
-  @OnClick(R.id.location)
-  public void onClickloc() {
+  @OnClick(R.id.location) public void onClickloc() {
     PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
     try {
@@ -347,13 +337,12 @@ public class ClubsMain extends AppCompatActivity {
     }
   }
 
-  @OnClick(R.id.confirm)
-  public void onClickcon() {
+  @OnClick(R.id.confirm) public void onClickcon() {
 
     boolean cancel = false;
     View focusView = null;
 
-    final String a = clubname.getText().toString();
+    final String a = mClubname.getText().toString();
     final String c = time.getText().toString();
     final String d = time1.getText().toString();
     final String e = mEmail.getText().toString();
@@ -363,21 +352,14 @@ public class ClubsMain extends AppCompatActivity {
     final String i = address3.getText().toString();
     final String j = pincode.getText().toString();
     final String l = mText.getText().toString();
-    final ArrayList<String> utils = new ArrayList<>();
 
-    if (parking.isChecked()) {
-      utils.add(parking.getText().toString());
-    }
-    if (swimming.isChecked()) {
-      utils.add(swimming.getText().toString());
-    }
 
     if (isEmpty(a)) {
-      clubname1.setError("Field cannot be empty");
-      focusView = clubname1;
+      mClubname.setError("Field cannot be empty");
+      focusView = mClubname;
       cancel = true;
     } else {
-      clubname1.setError(null);
+      mClubname.setError(null);
     }
     if (c.equals("MM:HH")) {
 
@@ -464,11 +446,11 @@ public class ClubsMain extends AppCompatActivity {
       mEmaila.setError(null);
     }
     if (photoUrl == null || photoUrl.isEmpty()) {
-          Toast.makeText(this, "Main club picture not uploaded!!", Toast.LENGTH_SHORT).show();
-          cancel = true;
-      } else {
+      Toast.makeText(this, "Main club picture not uploaded!!", Toast.LENGTH_SHORT).show();
+      cancel = true;
+    } else {
 
-      }
+    }
     if (mArrayUri != null && mArrayUri.size() != 0) {
 
     } else {
@@ -488,8 +470,7 @@ public class ClubsMain extends AppCompatActivity {
       DatabaseReference offsetRef =
           FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
       offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot snapshot) {
+        @Override public void onDataChange(DataSnapshot snapshot) {
           long offset = snapshot.getValue(Long.class);
           if (u != null && u.getMyclub() != null) {
             estimatedServerTimeMs = Long.parseLong(u.getMyclub().getClubid());
@@ -497,8 +478,7 @@ public class ClubsMain extends AppCompatActivity {
             estimatedServerTimeMs = (System.currentTimeMillis() + offset);
           }
           cal.setTimeInMillis(estimatedServerTimeMs);
-          SimpleDateFormat formatter =
-              new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+          SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
           final DatabaseReference mDatabase =
               ref.child("clubs").child(String.valueOf(estimatedServerTimeMs));
           final ArrayList<Uri> tempUri = new ArrayList<Uri>();
@@ -524,85 +504,80 @@ public class ClubsMain extends AppCompatActivity {
           final ArrayList<String> imagesUri = new ArrayList<String>();
           if (tempUri.size() != 0) {
 
-          for (index = 0; index < tempUri.size(); index++) {
+            for (index = 0; index < tempUri.size(); index++) {
 
-            StorageReference storageRef = storage.getReference()
-                .child("clubs")
-                .child(String.valueOf(estimatedServerTimeMs))
-                .child(String.valueOf(index));
-            UploadTask uploadTask = storageRef.putFile(tempUri.get(index));
+              StorageReference storageRef = storage.getReference()
+                  .child("clubs")
+                  .child(String.valueOf(estimatedServerTimeMs))
+                  .child(String.valueOf(index));
+              UploadTask uploadTask = storageRef.putFile(tempUri.get(index));
 
-            // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                hideprogressbar();
-                Snackbar.make(findViewById(android.R.id.content), "Upload Failed Try Again",
-                    Snackbar.LENGTH_LONG);
-                // Handle unsuccessful uploads
-              }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                if (downloadUrl != null) {
-                  imagesUri.add(downloadUrl.toString());
-                }
-
-                if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
-                  Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
-
-
-                  clublist.addAll(imagesUri.subList(0, index2));
-
-                  menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
-
-                  Club cl =
-                      new Club(String.valueOf(estimatedServerTimeMs),photoUrl, clublist, a, c, d, e, f, g, h,
-                          i, j, l, menulist, utils,locationurl);
-                  mDatabase.setValue(cl);
-                  ref.child("users").child(uid).child("myclub").setValue(cl);
+              // Register observers to listen for when the download is done or if it fails
+              uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override public void onFailure(@NonNull Exception exception) {
                   hideprogressbar();
-
-                  Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
-                      Toast.LENGTH_LONG).show();
-                  //  DatabaseReference df = ref.child("users").child(uid).child("myclub").child("clubid");
-                  //  df.addListenerForSingleValueEvent(new ValueEventListener() {
-                  //      @Override
-                  //      public void onDataChange(DataSnapshot dataSnapshot) {
-                  //          st = dataSnapshot.getValue(String.class);
-                  //      }
-                  //
-                  //      @Override
-                  //      public void onCancelled(DatabaseError databaseError) {
-                  //
-                  //      }
-                  //  });
-                  //Intent myIntent =
-                  //        new Intent(ClubsMain.this, EditDetailedClubActivity.class);
-                  //  myIntent.putExtra("Club_id", st);
-                  //startActivity(myIntent);
-                  //finish();
+                  Snackbar.make(findViewById(android.R.id.content), "Upload Failed Try Again",
+                      Snackbar.LENGTH_LONG);
+                  // Handle unsuccessful uploads
                 }
-              }
-            });
-          }
+              }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                  // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                  Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                  if (downloadUrl != null) {
+                    imagesUri.add(downloadUrl.toString());
+                  }
+
+                  if (index == tempUri.size() && imagesUri.size() == tempUri.size()) {
+                    Log.e(TAG, "onSuccess:\n " + imagesUri.toString() + "\n" + tempUri.toString());
+
+                    clublist.addAll(imagesUri.subList(0, index2));
+
+                    menulist.addAll(imagesUri.subList(index2, imagesUri.size()));
+
+                    Club cl =
+                        new Club(String.valueOf(estimatedServerTimeMs), photoUrl, clublist, a, c, d,
+                            e, f, g, h, i, j, l, menulist, mSelectedItems, locationurl);
+                    mDatabase.setValue(cl);
+                    ref.child("users").child(uid).child("myclub").setValue(cl);
+                    hideprogressbar();
+
+                    Toast.makeText(ClubsMain.this, "Redirect to payment gateway", Toast.LENGTH_LONG)
+                        .show();
+                    //  DatabaseReference df = ref.child("users").child(uid).child("myclub").child("clubid");
+                    //  df.addListenerForSingleValueEvent(new ValueEventListener() {
+                    //      @Override
+                    //      public void onDataChange(DataSnapshot dataSnapshot) {
+                    //          st = dataSnapshot.getValue(String.class);
+                    //      }
+                    //
+                    //      @Override
+                    //      public void onCancelled(DatabaseError databaseError) {
+                    //
+                    //      }
+                    //  });
+                    //Intent myIntent =
+                    //        new Intent(ClubsMain.this, EditDetailedClubActivity.class);
+                    //  myIntent.putExtra("Club_id", st);
+                    //startActivity(myIntent);
+                    //finish();
+                  }
+                }
+              });
+            }
           } else {
             Club cl =
-                new Club(String.valueOf(estimatedServerTimeMs),photoUrl, clublist, a, c, d, e, f, g, h,
-                    i, j, l, menulist, utils,locationurl);
+                new Club(String.valueOf(estimatedServerTimeMs), photoUrl, clublist, a, c, d, e, f,
+                    g, h, i, j, l, menulist, mSelectedItems, locationurl);
             mDatabase.setValue(cl);
             ref.child("users").child(uid).child("myclub").setValue(cl);
             hideprogressbar();
 
-            Toast.makeText(ClubsMain.this, "Redirect to payment gateway",
-                Toast.LENGTH_LONG).show();
+            Toast.makeText(ClubsMain.this, "Redirect to payment gateway", Toast.LENGTH_LONG).show();
           }
         }
 
-        @Override
-        public void onCancelled(DatabaseError error) {
+        @Override public void onCancelled(DatabaseError error) {
           hideprogressbar();
           System.err.println("Listener was cancelled");
         }
@@ -625,14 +600,12 @@ public class ClubsMain extends AppCompatActivity {
     DatabaseReference offsetRef =
         FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset");
     offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot snapshot) {
+      @Override public void onDataChange(DataSnapshot snapshot) {
         long offset = snapshot.getValue(Long.class);
         esttime = System.currentTimeMillis() + offset;
       }
 
-      @Override
-      public void onCancelled(DatabaseError error) {
+      @Override public void onCancelled(DatabaseError error) {
         System.err.println("Listener was cancelled");
       }
     });
@@ -645,14 +618,13 @@ public class ClubsMain extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("users").child(uid);
 
     mDatabase.addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot dataSnapshot) {
+      @Override public void onDataChange(DataSnapshot dataSnapshot) {
         u = dataSnapshot.getValue(Users.class);
         if (u != null && u.getMyclub() != null) {
           mArrayUri.clear();
           mArrayUriMenu.clear();
           Club c = u.getMyclub();
-          clubname.setText(c.getClubname());
+          mClubname.setText(c.getClubname());
           time.setText(c.getTime());
           time1.setText(c.getTime1());
           mEmail.setText(c.getEmail());
@@ -662,50 +634,42 @@ public class ClubsMain extends AppCompatActivity {
           address3.setText(c.getAddress3());
           pincode.setText(c.getPin());
           mText.setText(c.getDescription());
-            if(c.getPicture()!=null)
-                Glide.with(ClubsMain.this).load(c.getPicture()).into(picture);
+          if (c.getPicture() != null) GlideApp.with(ClubsMain.this).load(c.getPicture()).into(picture);
           if (c.getClubpicture() != null) {
             for (String pic : c.getClubpicture())
               mArrayUri.add(Uri.parse(pic));
             RecyclerView.Adapter adapter = new MultipleImagesAdapter(mArrayUri, ClubsMain.this);
-            recyclerView.setAdapter(adapter);
+            recyclerview.setAdapter(adapter);
           }
           if (c.getMenupicture() != null) {
             for (String pic : c.getMenupicture())
               mArrayUriMenu.add(Uri.parse(pic));
             RecyclerView.Adapter adapter2 =
                 new MultipleImagesAdapter(mArrayUriMenu, ClubsMain.this);
-            recyclerViewmenu.setAdapter(adapter2);
+            recyclerview1.setAdapter(adapter2);
           }
 
-          if(c.getUtils()!=null) {
-              ArrayList<String> ar = c.getUtils();
-              if (ar.contains("Parking")) {
-                  parking.setChecked(true);
-              }
-              if (ar.contains("Swimming")) {
-                  swimming.setChecked(true);
-              }
+          if (c.getUtils() != null) {
+            ArrayList<String> ar = c.getUtils();
+            showfacilities.setText(TextUtils.join(",", ar));//;ar.toString());
           }
           mConfirm.setText("Update Details");
         }
       }
 
-      @Override
-      public void onCancelled(DatabaseError databaseError) {
+      @Override public void onCancelled(DatabaseError databaseError) {
 
       }
     });
   }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
       Place place = PlacePicker.getPlace(this, data);
-      locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s", place.getLatLng().latitude,place.getLatLng().longitude);
-      Log.e("loc", "onActivityResult: "+location );
-
+      locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s",
+          place.getLatLng().latitude, place.getLatLng().longitude);
+      Log.e("loc", "onActivityResult: " + location);
     }
     RecyclerView.Adapter adapter;
     if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
@@ -717,7 +681,7 @@ public class ClubsMain extends AppCompatActivity {
           mArrayUri.add(uri);
         }
         adapter = new MultipleImagesAdapter(mArrayUri, this);
-        recyclerView.setAdapter(adapter);
+        recyclerview.setAdapter(adapter);
         Log.e(TAG, "onActivityResult: " + mArrayUri.toString());
       }
     }
@@ -730,72 +694,63 @@ public class ClubsMain extends AppCompatActivity {
           Uri uri = item.getUri();
           mArrayUriMenu.add(uri);
         }
-        menuadapter = new MultipleImagesAdapter(
-            mArrayUriMenu, this);
-        recyclerViewmenu.setAdapter(menuadapter);
+        menuadapter = new MultipleImagesAdapter(mArrayUriMenu, this);
+        recyclerview1.setAdapter(menuadapter);
         Log.e(TAG, "onActivityResult: " + mArrayUriMenu.toString());
       }
     }
     if (requestCode == IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
       mArrayUri.add(mImageUri);
-      adapter =
-          new MultipleImagesAdapter(mArrayUri,
-              this);
-      recyclerView.setAdapter(adapter);
+      adapter = new MultipleImagesAdapter(mArrayUri, this);
+      recyclerview.setAdapter(adapter);
       Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUri.toString());
     }
     if (requestCode == IMAGE_CAPTURE_2 && resultCode == RESULT_OK) {
 
       mArrayUriMenu.add(mImageUri);
-      menuadapter =
-          new MultipleImagesAdapter(mArrayUriMenu,
-              this);
-      recyclerViewmenu.setAdapter(menuadapter);
+      menuadapter = new MultipleImagesAdapter(mArrayUriMenu, this);
+      recyclerview1.setAdapter(menuadapter);
       Log.e(TAG, "onActivityResult: " + mImageUri + mArrayUriMenu.toString());
     }
-      switch (requestCode) {
-          case CroperinoConfig.REQUEST_TAKE_PHOTO:
-              if (resultCode == Activity.RESULT_OK) {
-                Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16,
-                    9, 0,
-                          0);
-              }
-              break;
-          case CroperinoConfig.REQUEST_PICK_FILE:
-              if (resultCode == Activity.RESULT_OK) {
-                  CroperinoFileUtil.newGalleryFile(data, ClubsMain.this);
-                Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16,
-                    9, 0,
-                          0);
-              }
-              break;
-          case CroperinoConfig.REQUEST_CROP_PHOTO:
-              if (resultCode == Activity.RESULT_OK) {
-                  Uri i = Uri.fromFile(CroperinoFileUtil.getmFileTemp());
-                Glide.with(this).load(i).into(picture);
-                  UploadTask uploadTask = imagesRef.putFile(i);
+    switch (requestCode) {
+      case CroperinoConfig.REQUEST_TAKE_PHOTO:
+        if (resultCode == Activity.RESULT_OK) {
+          Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16, 9, 0,
+              0);
+        }
+        break;
+      case CroperinoConfig.REQUEST_PICK_FILE:
+        if (resultCode == Activity.RESULT_OK) {
+          CroperinoFileUtil.newGalleryFile(data, ClubsMain.this);
+          Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), ClubsMain.this, true, 16, 9, 0,
+              0);
+        }
+        break;
+      case CroperinoConfig.REQUEST_CROP_PHOTO:
+        if (resultCode == Activity.RESULT_OK) {
+          Uri i = Uri.fromFile(CroperinoFileUtil.getmFileTemp());
+          Glide.with(this).load(i).into(picture);
+          UploadTask uploadTask = imagesRef.putFile(i);
 
-                  // Register observers to listen for when the download is done or if it fails
-                  uploadTask.addOnFailureListener(new OnFailureListener() {
-                      @Override
-                      public void onFailure(@NonNull Exception exception) {
-                          // Handle unsuccessful uploads
-                      }
-                  }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                      @Override
-                      public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                          // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                          Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                          photoUrl = downloadUrl.toString();
-                      }
-                  });
-                  //Do saving / uploading of photo method here.
-              }
-              break;
-          default:
-              break;
-      }
+          // Register observers to listen for when the download is done or if it fails
+          uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override public void onFailure(@NonNull Exception exception) {
+              // Handle unsuccessful uploads
+            }
+          }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+              // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+              Uri downloadUrl = taskSnapshot.getDownloadUrl();
+              photoUrl = downloadUrl.toString();
+            }
+          });
+          //Do saving / uploading of photo method here.
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   void showprogressbar() {
@@ -813,25 +768,25 @@ public class ClubsMain extends AppCompatActivity {
       activitySignup.setVisibility(View.VISIBLE);
     }
   }
-    @Override
-    public void onBackPressed() {
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(ClubsMain.this, R.style.pop);
-        builder.setMessage("Are You Sure you want to exit?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-              FirebaseAuth.getInstance().signOut();
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
-            }
-        });
-        builder.setNegativeButton("No", null);
-        builder.show();
-        //  super.onBackPressed();
-    }
-    private void prepareChooser() {
-        Croperino.prepareChooser(ClubsMain.this, "Change Picture",
-                ContextCompat.getColor(ClubsMain.this, android.R.color.background_dark));
-    }
+  @Override public void onBackPressed() {
+
+    final AlertDialog.Builder builder = new AlertDialog.Builder(ClubsMain.this, R.style.pop);
+    builder.setMessage("Are You Sure you want to exit?");
+    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+      @Override public void onClick(DialogInterface dialogInterface, int i) {
+        FirebaseAuth.getInstance().signOut();
+        Process.killProcess(Process.myPid());
+        System.exit(1);
+      }
+    });
+    builder.setNegativeButton("No", null);
+    builder.show();
+    //  super.onBackPressed();
+  }
+
+  private void prepareChooser() {
+    Croperino.prepareChooser(ClubsMain.this, "Change Picture",
+        ContextCompat.getColor(ClubsMain.this, android.R.color.background_dark));
+  }
 }
