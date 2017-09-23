@@ -418,7 +418,7 @@ public class AddAParty extends AppCompatActivity implements DatePickerDialog.OnD
       case PLACE_PICKER_REQUEST:
         if (resultCode == RESULT_OK) {
           Place place = PlacePicker.getPlace(this, data);
-           locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s", place.getLatLng().latitude,place.getLatLng().longitude);
+           locationurl = String.format("https://www.google.com/maps/search/?api=1&query=%s,%s&query_place_id=%s", place.getLatLng().latitude,place.getLatLng().longitude,place.getId());
           Log.e("loc", "onActivityResult: "+location );
 
         }
